@@ -8,7 +8,7 @@ scene = new THREE.Scene();
 
 // Create a camera
 camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
-camera.position.set(0,6,10)
+camera.position.set(0.33,5,10.5)
 
 // Create a renderer
 renderer = new THREE.WebGLRenderer();
@@ -18,9 +18,12 @@ document.body.appendChild(renderer.domElement);
 const stats = Stats();
 document.body.appendChild(stats.dom);
 
+// Add an ambient light
+const ambientLight = new THREE.AmbientLight(0x404040, 10); 
+scene.add(ambientLight);
 
 // Add a light
-const light = new THREE.DirectionalLight(0xffffff, 1);
+const light = new THREE.DirectionalLight(0xffffff, 3);
 light.position.set(1, 1, 1).normalize();
 scene.add(light);
 const controls = new OrbitControls(camera, renderer.domElement);
@@ -33,12 +36,14 @@ loader.load(
   'cytadel_room.glb',
   function (gltf) {
     scene.add(gltf.scene);
-  },
-  undefined,
-  function (error) {
-    console.error(error);
   }
 );
+loader.load('avatar.glb', function (gltf) {
+  avatar = gltf.scene;
+  scene.add(gltf.scene);
+  avatar.position.set(0, 1.65, 6);
+  avatar.scale.set(2,2,2)
+});
 
 // Animation loop
 function animate() {

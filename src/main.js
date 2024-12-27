@@ -1,41 +1,49 @@
 import * as THREE from 'three';
+import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader.js';
+import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls.js';
+import Stats from 'three/examples/jsm/libs/stats.module.js';
 
-// Create a scene
-const scene = new THREE.Scene();
+// Create the scene
+scene = new THREE.Scene();
 
 // Create a camera
-const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
-camera.position.z = 5;
+camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
+camera.position.set(0,6,10)
 
 // Create a renderer
-const renderer = new THREE.WebGLRenderer();
+renderer = new THREE.WebGLRenderer();
 renderer.setSize(window.innerWidth, window.innerHeight);
 document.body.appendChild(renderer.domElement);
+// Add stats
+const stats = Stats();
+document.body.appendChild(stats.dom);
 
-// Create a geometry and a material, then combine them into a mesh
-const geometry = new THREE.BoxGeometry();
-const material = new THREE.MeshBasicMaterial({ color: 0x00ff00 });
-const cube = new THREE.Mesh(geometry, material);
 
-// Add the cube to the scene
-scene.add(cube);
+// Add a light
+const light = new THREE.DirectionalLight(0xffffff, 1);
+light.position.set(1, 1, 1).normalize();
+scene.add(light);
+const controls = new OrbitControls(camera, renderer.domElement);
+controls.enableDamping = true;
+controls.dampingFactor = 0.25;
+controls.enableZoom = true;
+// Load the GLB model
+const loader = new GLTFLoader();
+loader.load(
+  'cytadel_room.glb',
+  function (gltf) {
+    scene.add(gltf.scene);
+  },
+  undefined,
+  function (error) {
+    console.error(error);
+  }
+);
 
-// Create an animation loop
+// Animation loop
 function animate() {
   requestAnimationFrame(animate);
-
-  // Rotate the cube for some basic animation
-  cube.rotation.x += 0.01;
-  cube.rotation.y += 0.01;
-
   renderer.render(scene, camera);
+  stats.update();
 }
-// Adjust camera aspect ratio and renderer size when the window is resized
-window.addEventListener('resize', () => {
-  camera.aspect = window.innerWidth / window.innerHeight;
-  camera.updateProjectionMatrix();
-  renderer.setSize(window.innerWidth, window.innerHeight);
-});
-
-// Start the animation loop
 animate();

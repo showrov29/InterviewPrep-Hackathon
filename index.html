@@ -15,10 +15,17 @@
   <script>
     let camera, scene, renderer, avatar
     let client = io()
+
+    function handleButtonClick() {
+      const inputBox = document.getElementById('textInput');
+      const text = inputBox.value;
+      getAudioAndCharsFromElevenLabs(text, 'happy');
+      inputBox.value = '';
+    }
   </script>
-  <div class="bg-black flex flex-col py-2 items-center justify-center">
-    <button class="bg-white px-2 rounded"
-      onclick="getAudioAndCharsFromElevenLabs('Hello! How are you? Hope you are doing great! Lets have a chat!', 'happy')">Test</button>
+  <div class="bg-black py-2 items-center justify-center flex flex-row gap-2">
+    <input id="textInput" type="text" class="px-2 rounded" placeholder="Enter text here" />
+    <button class="bg-white px-2 rounded" onclick="handleButtonClick()">Test</button>
   </div>
   <audio id="audioPlayback" hidden controls>
     <source id="audioSource" type="audio/mp3" src="" />

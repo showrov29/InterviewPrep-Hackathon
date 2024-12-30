@@ -13,6 +13,10 @@ elevenLabsSocket.onerror = function (error) {
 async function streamAudioData(audioStream) {
   const mediaSource = new MediaSource();
   const audioElement = document.getElementById("audioPlayback");
+  
+  audioElement.onended = function () {
+    elevenLabsSocket = new WebSocket(wsUrl);
+  }
 
   // Ensure audioElement is valid before using
   if (!audioElement) {

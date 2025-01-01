@@ -25,6 +25,8 @@ recognition.onresult = async (event) => {
       getAudioAndCharsFromElevenLabs(response)
     } else {
       interimTranscript += transcript;
+      let user_text = document.getElementById('user-text');
+      user_text.innerHTML = interimTranscript;
     }
   }
 //   console.log(finalTranscript + interimTranscript);

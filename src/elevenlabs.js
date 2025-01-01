@@ -15,7 +15,9 @@ async function streamAudioData(audioStream) {
   const audioElement = document.getElementById("audioPlayback");
   
   audioElement.onended = function () {
-    elevenLabsSocket = new WebSocket(wsUrl);
+    setInterval(() => {
+      elevenLabsSocket = new WebSocket(wsUrl);
+    }, 2000);
   }
 
   // Ensure audioElement is valid before using
@@ -156,6 +158,9 @@ async function getAudioAndCharsFromElevenLabs(text) {
           initialVisemes.push(visemesOnly);
 
           if (firstTime) {
+            document.getElementById("interviewer-div").style.display = "block";
+            let interviewerText = document.getElementById("interviewer-text");
+            interviewerText.innerHTML = text;
             audioElement.play();
           }
         }

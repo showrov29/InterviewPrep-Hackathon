@@ -93,13 +93,11 @@ async function streamAudioData(audioStream) {
   });
 }
 
-async function getAudioAndCharsFromElevenLabs(text, emotion) {
+async function getAudioAndCharsFromElevenLabs(text) {
   const startTime = Date.now();
   const audioElement = document.getElementById("audioPlayback");
   let firstTime = true;
   let initialVisemes = [];
-  let visemeIndex = 0;
-  let donePlayingVisemes = false;
 
   const audioStream = new ReadableStream({
     start(controller) {

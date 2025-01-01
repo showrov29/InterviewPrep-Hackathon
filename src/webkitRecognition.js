@@ -13,14 +13,16 @@ recognition.onstart = () => {
 recognition.onend = () => {
     console.log('Speech recognition service disconnected');
   }
-recognition.onresult = (event) => {
+recognition.onresult = async (event) => {
   let interimTranscript = '';
   for (let i = event.resultIndex, len = event.results.length; i < len; i++) {
     let transcript = event.results[i][0].transcript;
     if (event.results[i].isFinal) {
-        console.log('finalTranscript: ', finalTranscript);
-        
       finalTranscript += transcript;
+      console.log('finalTranscript: ', finalTranscript);
+      let response = await getResponse(finalTranscript)  
+      console.log("🚀 ~ response:", response)
+      getAudioAndCharsFromElevenLabs(response)
     } else {
       interimTranscript += transcript;
     }

@@ -6,7 +6,7 @@ import { Server } from 'socket.io';
 import phonemeProcessor from './src/phonemeServe.js';
 import http from 'http';
 import pronouncing from 'pronouncing';
-
+import mongoose from 'mongoose';
 // Convert the import.meta.url to __dirname equivalent
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -34,9 +34,25 @@ io.on("connection", (socket) => {
     console.log("User disconnected");
   });
 });
+function connectToDatabase() {
+  // Connect to MongoDB
+  mongoose.connect('mongodb+srv://showrov:c7r2bd8z@interviewprep.tdpep.mongodb.net/');
+
+  const db = mongoose.connection;
+
+  db.on('error', (error) => {
+    console.error("Error connecting to MongoDB:", error);
+  });
+
+  db.once('open', () => {
+    console.log("Connected to MongoDB");
+  });
+}
 
 async function start() {
   try {
+    // Connect to MongoDB
+    connectToDatabase();
     // Create a Vite server instance
     const vite = await createServer({
       server: { middlewareMode: 'html' }, // Correct middleware mode

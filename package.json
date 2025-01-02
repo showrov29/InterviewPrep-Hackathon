@@ -13,6 +13,7 @@
   },
   "dependencies": {
     "express": "^4.21.2",
+    "mongoose": "^8.9.3",
     "pronouncing": "github:aparrish/pronouncingjs",
     "socket.io": "^4.8.1",
     "three": "^0.171.0"

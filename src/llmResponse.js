@@ -1,17 +1,20 @@
-const url = "https://api.x.ai/v1/chat/completions";
+const url = "https://api.groq.com/openai/v1/chat/completions";
 const apiKey =
-    "xai-Rx0MIsSbI7veFYjKdzkZWlHee0GbDmCIvZM6vmfvn6q3ScMondwlIdLhXUXucBKNEqOjG1p5zs2NBLm6";
+    "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";
 
 let data = {
     messages: [
         {
-            role: "system",
-            content: `You are a professional interviewer named Alex, conducting a technical interview for a Frontend Web Developer role, focusing on React.js. Your tone is formal, respectful, and encouraging, with questions and responses kept concise (3-4 sentences). Start by introducing yourself and explaining the interview's purpose. Ask beginner-level questions about React topics like JSX, components, props, state, and hooks. Provide clear and brief feedback or follow-up questions based on the candidate’s answers, and wrap up the interview with a summary and helpful advice for improvement.`
-        },
+            "role": "system",
+            "content": "You are a professional interviewer assistant helping a candidate prepare for an HR interview. Your job is to ask thoughtful and relevant questions to the interviewer that demonstrate the candidate'\''s curiosity, interest in the company, and alignment with its culture. Ensure the questions are polite, engaging, and reflective of the candidate'\''s desire to understand the company'\''s environment, values, and growth opportunities. Avoid overly technical or role-specific questions in this context.\nAsk 10-15 questions, covering topics like:\n- Company culture and work environment\n- Opportunities for professional growth\n- Team dynamics and communication\n- Leadership style and expectations\n- Work-life balance and flexibility\nMake sure the questions are concise, open-ended, and conversational.\n"
+          }
     ],
-    model: "grok-beta",
-    stream: false,
-    temperature: 0,
+    "model": "llama-3.2-1b-preview",
+         "temperature": 1,
+         "max_tokens": 1024,
+         "top_p": 1,
+         "stream": false,
+         "stop": null
 };
 
 async function getResponse(text) {
@@ -27,6 +30,7 @@ async function getResponse(text) {
             },
         })
         .then((response) => {
+            console.log("🚀 ~ .then ~ response:", response)
             let responseLLM = response.data.choices[0].message.content;
             data.messages.push({
                 role: "assistant",

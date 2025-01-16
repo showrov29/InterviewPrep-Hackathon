@@ -8,8 +8,8 @@ scene = new THREE.Scene();
 
 // Create a camera
 camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
-camera.position.set(0.33,5,10.5)
-
+// camera.position.set(0.33,5,10.5)
+camera.position.set(0,0,1)
 // Create a renderer
 renderer = new THREE.WebGLRenderer();
 renderer.setSize(window.innerWidth, window.innerHeight);
@@ -33,16 +33,19 @@ controls.enableZoom = true;
 // Load the GLB model
 const loader = new GLTFLoader();
 loader.load(
-  'cytadel_room.glb',
+  'modern_office.glb',
   function (gltf) {
-    scene.add(gltf.scene);
+    let room = gltf.scene;
+    room.rotateY(-Math.PI/2);
+    scene.add(room);
   }
 );
-loader.load('avatar.glb', function (gltf) {
+loader.load('avatar2.glb', function (gltf) {
   avatar = gltf.scene;
-  scene.add(gltf.scene);
-  avatar.position.set(0, 1.65, 6);
-  avatar.scale.set(2,2,2)
+
+  scene.add(avatar);
+  avatar.position.set(0, -1.65, -0.5);
+  // avatar.scale.set(2,2,2)
 });
 
 // Animation loop

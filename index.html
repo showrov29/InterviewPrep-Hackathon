@@ -20,14 +20,35 @@
     let camera, scene, renderer, avatar
     let client = io()
 
+    // function handleButtonClick() {
+    //   let user_text = document.getElementById('user-text');
+    //   user_text.innerHTML = 'Listening...';
+    //   elevenLabsSocket = new WebSocket(wsUrl);
+
+    //   startMicrophone()
+    // }
+    
+  </script>
+  <script>
+    let isListening = false;
+
     function handleButtonClick() {
       let user_text = document.getElementById('user-text');
-      user_text.innerHTML = 'Listening...';
-      elevenLabsSocket = new WebSocket(wsUrl);
+      let button = document.querySelector('button');
 
-      startMicrophone()
+      if (isListening) {
+        user_text.innerHTML = '';
+        button.innerHTML = 'Speak';
+        stopMicrophone();
+      } else {
+        user_text.innerHTML = 'Listening...';
+        button.innerHTML = 'Stop';
+        elevenLabsSocket = new WebSocket(wsUrl);
+        startMicrophone();
+      }
+
+      isListening = !isListening;
     }
-    
   </script>
   <div class="bg-black py-2 items-center justify-center flex flex-row gap-2">
     <button class="bg-white px-2 rounded" onclick="handleButtonClick()">Speak</button>

@@ -15,9 +15,7 @@ async function streamAudioData(audioStream) {
   const audioElement = document.getElementById("audioPlayback");
   
   audioElement.onended = function () {
-    setInterval(() => {
       elevenLabsSocket = new WebSocket(wsUrl);
-    }, 2000);
   }
 
   // Ensure audioElement is valid before using

@@ -22,6 +22,8 @@
     function handleButtonClick() {
       let user_text = document.getElementById('user-text');
       user_text.innerHTML = 'Listening...';
+      elevenLabsSocket = new WebSocket(wsUrl);
+
       startMicrophone()
     }
   </script>

@@ -17,6 +17,7 @@ async function streamAudioData(audioStream) {
   
   audioElement.onended = function () {
       elevenLabsSocket = new WebSocket(wsUrl);
+      startMicrophone()
   }
 
   // Ensure audioElement is valid before using

@@ -20,7 +20,8 @@ recognition.onresult = async (event) => {
     if (event.results[i].isFinal) {
       finalTranscript += transcript;
       console.log('finalTranscript: ', finalTranscript);
-      let response = await getResponse(finalTranscript)  
+      // let response = await getResponse(finalTranscript)  
+      let response = "A quick brown fox jumps over the lazy dog"
       console.log("🚀 ~ response:", response)
       getAudioAndCharsFromElevenLabs(response)
     } else {

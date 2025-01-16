@@ -54,8 +54,8 @@ async function start() {
     });
 
     // Start the server
-    server.listen(3000, () => {
-      console.log('Server running at http://localhost:3000');
+    server.listen(3300, () => {
+      console.log('Server running at http://localhost:3300');
     });
   } catch (error) {
     console.error("Error starting the server:", error);

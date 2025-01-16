@@ -43,7 +43,8 @@ loader.load(
     scene.add(gltf.scene);
   }
 );
-loader.load('avatar.glb', function (gltf) {
+loader.load('three_avatar.glb', function (gltf) {
+  console.log(gltf.scene.children[0].children);
   avatar = gltf.scene;
   scene.add(gltf.scene);
   avatar.position.set(0, 1.65, 6);

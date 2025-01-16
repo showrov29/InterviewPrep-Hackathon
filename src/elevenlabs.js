@@ -15,7 +15,7 @@ async function streamAudioData(audioStream) {
   const audioElement = document.getElementById("audioPlayback");
   
   audioElement.onended = function () {
-    elevenLabsSocket = new WebSocket(wsUrl);
+      elevenLabsSocket = new WebSocket(wsUrl);
   }
 
   // Ensure audioElement is valid before using
@@ -93,8 +93,7 @@ async function streamAudioData(audioStream) {
   });
 }
 
-async function getAudioAndCharsFromElevenLabs(text, emotion) {
-  const startTime = Date.now();
+async function getAudioAndCharsFromElevenLabs(text ) {
   const audioElement = document.getElementById("audioPlayback");
   let firstTime = true;
   let initialVisemes = [];
@@ -115,7 +114,7 @@ async function getAudioAndCharsFromElevenLabs(text, emotion) {
             stability: 0.2,
             similarity_boost: 0.5,
           },
-          xi_api_key: "sk_214c6a161dd4c840c91ee05c2b4ec36221b52a2f19f755cc",
+          xi_api_key: "780d03e1e76b6b66f941c333610d46e1",
         };
         elevenLabsSocket.send(JSON.stringify(bosMessage));
         const textMessage = {
@@ -143,8 +142,6 @@ async function getAudioAndCharsFromElevenLabs(text, emotion) {
         }
 
         if (response.normalizedAlignment) {
-          elevenLabsDelay = Date.now() - startTime;
-          visemeDelay = Date.now();
           const { result, startTimeAdder } = elevenLabsResToObjArr(
             response.normalizedAlignment
           );
@@ -157,6 +154,7 @@ async function getAudioAndCharsFromElevenLabs(text, emotion) {
 
           initialVisemes.push(visemesOnly);
 
+          console.log("🚀 ~ initialVisemes:", initialVisemes)
           if (firstTime) {
             audioElement.play();
           }
@@ -183,7 +181,29 @@ async function getAudioAndCharsFromElevenLabs(text, emotion) {
     },
   });
   await streamAudioData(audioStream);
+  audioElement.onplay = async () => {
+    isAudioPlaying = true;
+    firstTime = false;
+    visemeIndex++;
+    // donePlayingVisemes = await mapVisemesToModel(initialVisemes[0]);
+    donePlayingVisemes = true;
+  };
 
+  audioElement.addEventListener("ended", async () => {
+    isAudioPlaying = false;
+  });
+  audioElement.ontimeupdate = async (track) => {
+    if (donePlayingVisemes) {
+      donePlayingVisemes = false;
+      visemeIndex++;
+      if (initialVisemes[visemeIndex - 1]) {
+        // donePlayingVisemes = await mapVisemesToModel(
+        //   initialVisemes[visemeIndex - 1]
+        // );
+        donePlayingVisemes = true
+      }
+    }
+  };
 }
 
 //Function to handle the text-to-speech and viseme data
@@ -256,7 +276,6 @@ function fetchPhonemeResult(word) {
     client.emit("sendWord", word);
 
     client.once("phonemeResult", (data) => {
-        console.log(data);
       resolve(data);
     });
   });

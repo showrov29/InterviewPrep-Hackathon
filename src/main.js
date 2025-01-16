@@ -38,12 +38,12 @@ const stats = Stats();
 document.body.appendChild(stats.dom);
 
 // Add an ambient light
-const ambientLight = new THREE.AmbientLight(0x404040, 10);
+const ambientLight = new THREE.AmbientLight(0x404040, 5);
 scene.add(ambientLight);
 
 // Add a light
-const light = new THREE.DirectionalLight(0xffffff, 3);
-light.position.set(1, 1, 1).normalize();
+light = new THREE.DirectionalLight(0xffffff, 5 );
+light.position.set(0, -1, 2);
 scene.add(light);
 // const controls = new OrbitControls(camera, renderer.domElement);
 // controls.enableDamping = true;

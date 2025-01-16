@@ -1,13 +1,65 @@
 <!doctype html>
 <html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <link rel="icon" type="image/svg+xml" href="/vite.svg" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Vite App</title>
-  </head>
-  <body>
-    <div id="app"></div>
-    <script type="module" src="/src/main.js"></script>
-  </body>
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>InterviewPrep Hackathon</title>
+  <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+  <script src="https://cdn.socket.io/4.0.0/socket.io.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+  <script src="src/main.js" type="module"></script>
+  <script src="src/elevenlabs.js"></script>
+  <script src="./src/webkitRecognition.js"></script>
+  <script src="./src/llmResponse.js"></script>
+</head>
+
+<body style="overflow: hidden;"></body>
+  <script>
+    let changeMorphTargetByName
+    let camera, scene, renderer, avatar, light
+    let client = io()
+
+    // function handleButtonClick() {
+    //   let user_text = document.getElementById('user-text');
+    //   user_text.innerHTML = 'Listening...';
+    //   elevenLabsSocket = new WebSocket(wsUrl);
+
+    //   startMicrophone()
+    // }
+    
+  </script>
+  <script>
+    let isListening = false;
+
+    function handleButtonClick() {
+      let user_text = document.getElementById('user-text');
+      let button = document.querySelector('button');
+
+      if (isListening) {
+        user_text.innerHTML = '';
+        button.innerHTML = 'Speak';
+        stopMicrophone();
+      } else {
+        user_text.innerHTML = 'Listening...';
+        button.innerHTML = 'Stop';
+        elevenLabsSocket = new WebSocket(wsUrl);
+        startMicrophone();
+      }
+
+      isListening = !isListening;
+    }
+  </script>
+  <div class="bg-black py-2 items-center justify-center flex flex-row gap-2">
+    <button class="bg-white px-2 rounded" onclick="handleButtonClick()">Speak</button>
+    <p class="text-white capitalize" id="user-text"></p>
+  </div>
+  <div class="bg-black py-2 items-center justify-center flex flex-row gap-2 hidden" id="interviewer-div">
+    <p class="text-white capitalize text-center" id="interviewer-text"></p>
+  </div>
+  <audio id="audioPlayback" hidden controls>
+    <source id="audioSource" type="audio/mp3" src="" />
+  </audio>
+</body>
+
 </html>

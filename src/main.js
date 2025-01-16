@@ -15,6 +15,8 @@ let thisVisemeIndex = 0;
 let lastVisemeIndex = 0;
 let dictionanry
 let springs = [];
+let mixer
+
 // Create the scene
 scene = new THREE.Scene();
 
@@ -36,7 +38,7 @@ const stats = Stats();
 document.body.appendChild(stats.dom);
 
 // Add an ambient light
-const ambientLight = new THREE.AmbientLight(0x404040, 10); 
+const ambientLight = new THREE.AmbientLight(0x404040, 10);
 scene.add(ambientLight);
 
 // Add a light
@@ -52,15 +54,20 @@ const loader = new GLTFLoader();
 loader.load(
   'modern_office.glb',
   function (gltf) {
-    let room = gltf.scene;
+  let room = gltf.scene;
     room.rotateY(-Math.PI/2);
-    scene.add(room);
+  scene.add(room);
   }
 );
-loader.load('avatar2.glb', function (gltf) {
+loader.load('sittingHR.glb', function (gltf) {
   avatar = gltf.scene;
-  console.log("🚀 ~ avatar:", avatar.children[0].getObjectByName('Wolf3D_Head'))
-dictionanry=avatar.children[0].getObjectByName('Wolf3D_Head').morphTargetDictionary
+  // Play the first animation clip
+  mixer = new THREE.AnimationMixer(avatar);
+  const clips = gltf.animations;
+  let seat = mixer.clipAction(clips[0]);
+  seat.timeScale = 0.3;
+  seat.play();
+  dictionanry = avatar.children[0].getObjectByName('Wolf3D_Avatar').morphTargetDictionary;
   scene.add(avatar);
   avatar.position.set(0, -1.65, -0.5);
   // avatar.scale.set(2,2,2)
@@ -73,6 +80,8 @@ function animate() {
   renderer.render(scene, camera);
   stats.update();
 
+  mixer && mixer.update();
+  
 //   const currTime = performance.now();
 // 	// const delta = (currTime - prevTime) / 1000
 // 	const delta = 0.01;
@@ -106,7 +115,7 @@ function animate() {
 animate();
 
   changeMorphTargetByName=(targetName)=> {
-  console.log("🚀 ~ targetName:", targetName)
+  // console.log("🚀 ~ targetName:", targetName)
 	if (!avatar) {
 		console.error("Model not loaded yet.");
 		return;
@@ -116,14 +125,14 @@ animate();
 // 	lastVisemeIndex = thisVisemeIndex;
 //  console.log("🚀 ~ lastVisemeIndex:", lastVisemeIndex)
  
-  console.log("🚀 ~ dictionanry:", dictionanry);
+  // console.log("🚀 ~ dictionanry:", dictionanry);
   
- avatar.children[0].getObjectByName('Wolf3D_Head').morphTargetInfluences[lastVisemeIndex] =0
+ avatar.children[0].getObjectByName('Wolf3D_Avatar').morphTargetInfluences[lastVisemeIndex] = 0
 	thisVisemeIndex = dictionanry[targetName]||0;
-	console.log("🚀 ~ thisVisemeIndex:", thisVisemeIndex)
-  avatar.children[0].getObjectByName('Wolf3D_Head').morphTargetInfluences[thisVisemeIndex] =1;
+	// console.log("🚀 ~ thisVisemeIndex:", thisVisemeIndex)
+  avatar.children[0].getObjectByName('Wolf3D_Avatar').morphTargetInfluences[thisVisemeIndex] =1;
   lastVisemeIndex = thisVisemeIndex;
-  console.log("🚀 ~ lastVisemeIndex:", lastVisemeIndex)
+  // console.log("🚀 ~ lastVisemeIndex:", lastVisemeIndex)
 }
 
 

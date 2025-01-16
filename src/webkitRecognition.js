@@ -18,6 +18,7 @@ recognition.onresult = async (event) => {
   for (let i = event.resultIndex, len = event.results.length; i < len; i++) {
     let transcript = event.results[i][0].transcript;
     if (event.results[i].isFinal) {
+      finalTranscript = ''
       finalTranscript += transcript;
       console.log('finalTranscript: ', finalTranscript);
       let response = await getResponse(finalTranscript)  

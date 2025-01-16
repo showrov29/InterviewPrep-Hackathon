@@ -95,11 +95,11 @@ async function streamAudioData(audioStream) {
 }
 
 async function getAudioAndCharsFromElevenLabs(text ) {
+  let donePlayingVisemes = false;
   const audioElement = document.getElementById("audioPlayback");
   let firstTime = true;
   let initialVisemes = [];
   let visemeIndex = 0;
-  let donePlayingVisemes = false;
 
   const audioStream = new ReadableStream({
     start(controller) {
@@ -155,7 +155,7 @@ async function getAudioAndCharsFromElevenLabs(text ) {
 
           initialVisemes.push(visemesOnly);
 
-          mapVisemesToModel(initialVisemes);
+          // mapVisemesToModel(initialVisemes);
           // console.log("🚀 ~ initialVisemes:", initialVisemes)
           if (firstTime) {
             audioElement.play();
@@ -187,8 +187,8 @@ async function getAudioAndCharsFromElevenLabs(text ) {
     isAudioPlaying = true;
     firstTime = false;
     visemeIndex++;
-    // donePlayingVisemes = await mapVisemesToModel(initialVisemes[0]);
-    donePlayingVisemes = true;
+    donePlayingVisemes = await mapVisemesToModel(initialVisemes[0]);
+    console.log("🚀 ~ audioElement.onplay= ~ donePlayingVisemes:", donePlayingVisemes)
   };
 
   audioElement.addEventListener("ended", async () => {
@@ -199,10 +199,10 @@ async function getAudioAndCharsFromElevenLabs(text ) {
       donePlayingVisemes = false;
       visemeIndex++;
       if (initialVisemes[visemeIndex - 1]) {
-        // donePlayingVisemes = await mapVisemesToModel(
-        //   initialVisemes[visemeIndex - 1]
-        // );
-        donePlayingVisemes = true
+        donePlayingVisemes = await mapVisemesToModel(
+          initialVisemes[visemeIndex - 1]
+        );
+        // donePlayingVisemes = true
       }
     }
   };
@@ -306,14 +306,20 @@ function convertToVisemes(arr) {
   return visArr;
 }
 
-function mapVisemesToModel(visemes) {
-  console.log("🚀 ~ mapVisemesToModel ~ visemes:", visemes)
-  visemes[0].map((viseme) => {
-    // console.log("🚀 ~ visemes.map ~ viseme:", viseme)
-    //  changeMorphTargetByName(viseme.value);
-    setTimeout(() => {
-      changeMorphTargetByName(viseme.value);
-    }, viseme.time);
+async function mapVisemesToModel(visemes) {
+  console.log("🚀 ~ mapVisemesToModel ~ visemes:", visemes.length);
+  let totalComp = 0;
+  return new Promise((resolve) => {
+    for (let i = 0; i < visemes.length; i++) {
+      const viseme = visemes[i];
+      setTimeout(() => {
+        changeMorphTargetByName(viseme.value);
+        totalComp += 1;
+        if (visemes.length === totalComp) {
+          console.log('completed');
+          resolve(true);
+        }
+      }, viseme.time);
+    }
   });
-
 }

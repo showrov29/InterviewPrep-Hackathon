@@ -18,6 +18,7 @@ let data = {
 };
 
 async function getResponse(text) {
+    console.log(data)
     data.messages.push({
         role: "user",
         content: text,

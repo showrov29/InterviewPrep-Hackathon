@@ -6,6 +6,7 @@ elevenLabsSocket.onerror = function (error) {
   console.error("WebSocket error:", error);
   // Handle errors here, consider reconnecting
 };
+
 /**
  * Streams audio data for playback using the MediaSource API.
  * @param {ReadableStream} audioStream - The audio stream data.
@@ -154,7 +155,8 @@ async function getAudioAndCharsFromElevenLabs(text ) {
 
           initialVisemes.push(visemesOnly);
 
-          console.log("🚀 ~ initialVisemes:", initialVisemes)
+          mapVisemesToModel(initialVisemes);
+          // console.log("🚀 ~ initialVisemes:", initialVisemes)
           if (firstTime) {
             audioElement.play();
           }
@@ -302,4 +304,16 @@ function convertToVisemes(arr) {
     }
   }
   return visArr;
+}
+
+function mapVisemesToModel(visemes) {
+  console.log("🚀 ~ mapVisemesToModel ~ visemes:", visemes)
+  visemes[0].map((viseme) => {
+    // console.log("🚀 ~ visemes.map ~ viseme:", viseme)
+    //  changeMorphTargetByName(viseme.value);
+    setTimeout(() => {
+      changeMorphTargetByName(viseme.value);
+    }, viseme.time);
+  });
+
 }

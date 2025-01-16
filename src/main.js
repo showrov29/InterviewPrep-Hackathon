@@ -3,6 +3,18 @@ import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader.js';
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls.js';
 import Stats from 'three/examples/jsm/libs/stats.module.js';
 
+
+let thisVisemeX = 0;
+let thisVisemeV = 0;
+let visemeDamp = 4;
+let visemeK = 8;
+let lastVisemX = 0;
+let lastVisemV = 0;
+let thisTarget = 1;
+let thisVisemeIndex = 0;
+let lastVisemeIndex = 0;
+let dictionanry
+let springs = [];
 // Create the scene
 scene = new THREE.Scene();
 
@@ -47,16 +59,76 @@ loader.load(
 );
 loader.load('avatar2.glb', function (gltf) {
   avatar = gltf.scene;
-
+  console.log("🚀 ~ avatar:", avatar.children[0].getObjectByName('Wolf3D_Head'))
+dictionanry=avatar.children[0].getObjectByName('Wolf3D_Head').morphTargetDictionary
   scene.add(avatar);
   avatar.position.set(0, -1.65, -0.5);
   // avatar.scale.set(2,2,2)
 });
 
+let prevTime = performance.now();
 // Animation loop
 function animate() {
   requestAnimationFrame(animate);
   renderer.render(scene, camera);
   stats.update();
+
+//   const currTime = performance.now();
+// 	// const delta = (currTime - prevTime) / 1000
+// 	const delta = 0.01;
+// 	// console.log(delta)
+//   if (!avatar) {
+//     return
+//   }
+// 	thisVisemeX += thisVisemeV * delta;
+// 	let acceleration = visemeK * (thisTarget - thisVisemeX);
+// 	let resistance = visemeDamp * thisVisemeV;
+// 	thisVisemeV += (acceleration - resistance) * delta;
+
+// 	avatar.children[0].getObjectByName('Wolf3D_Head').morphTargetInfluences[lastVisemeIndex] =1 - thisVisemeX;
+//     avatar.children[0].getObjectByName('Wolf3D_Head').morphTargetInfluences[thisVisemeIndex] =thisVisemeX;
+// console.log(avatar.children[0].getObjectByName('Wolf3D_Head').morphTargetInfluences);
+
+// 	// console.log(thisVisemeX)
+// 	let spring = {
+// 		x: thisVisemeX,
+// 		a: acceleration,
+// 		r: resistance,
+// 		v: thisVisemeV,
+// 	};
+// 	springs = [...springs, spring];
+// 	if (springs.length == 1000) {
+// 		console.log(spring);
+// 		// console.table(springs);
+// 	}
+// 	prevTime = currTime;
 }
 animate();
+
+  changeMorphTargetByName=(targetName)=> {
+  console.log("🚀 ~ targetName:", targetName)
+	if (!avatar) {
+		console.error("Model not loaded yet.");
+		return;
+	}
+  
+  
+// 	lastVisemeIndex = thisVisemeIndex;
+//  console.log("🚀 ~ lastVisemeIndex:", lastVisemeIndex)
+ 
+  console.log("🚀 ~ dictionanry:", dictionanry);
+  
+ avatar.children[0].getObjectByName('Wolf3D_Head').morphTargetInfluences[lastVisemeIndex] =0
+	thisVisemeIndex = dictionanry[targetName]||0;
+	console.log("🚀 ~ thisVisemeIndex:", thisVisemeIndex)
+  avatar.children[0].getObjectByName('Wolf3D_Head').morphTargetInfluences[thisVisemeIndex] =1;
+  lastVisemeIndex = thisVisemeIndex;
+  console.log("🚀 ~ lastVisemeIndex:", lastVisemeIndex)
+}
+
+
+// function mapVisemesToModel(visemes){
+//   visemes.map((viseme) => {
+//     changeMorphTargetByName(viseme);
+//   })
+// }

@@ -64,20 +64,20 @@ loader.load('sittingHR.glb', function (gltf) {
   mixer = new THREE.AnimationMixer(avatar);
   const clips = gltf.animations;
   let seat = mixer.clipAction(clips[0]);
-  seat.timeScale = 0.3;
   seat.play();
   dictionary = avatar.children[0].getObjectByName('Wolf3D_Avatar').morphTargetDictionary;
   scene.add(avatar);
   avatar.position.set(0, -1.65, -0.5);
   scene.position.set(0, 0.4, -0.9)
 });
-
+const clock = new THREE.Clock();
 // Animation loop
 function animate() {
   renderer.setAnimationLoop(() => {
+    const delta = clock.getDelta();
     renderer.render(scene, camera);
     stats.update();
-    mixer && mixer.update();
+    mixer && mixer.update(delta);
   });
 }
 animate();

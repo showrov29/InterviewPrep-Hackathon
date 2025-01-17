@@ -40,9 +40,11 @@ recognition.onresult = async (event) => {
 
 function startMicrophone() {
       document.getElementById("speak-button").style.display = 'inline-block'
+      micIndicator.visible = true
   recognition.start();
 }
 
 function stopMicrophone() {
+  micIndicator.visible = false
   recognition.stop();
 }

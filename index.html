@@ -80,6 +80,7 @@
   let isListening = false;
   let firstTime = true;
   let response = ""
+  let micIndicator;
 
   window.onload = async () => {
     response = await getResponse(`Hello!`)
@@ -112,6 +113,15 @@
   async function initSpeech() {
     getAudioAndCharsFromElevenLabs(response)
   }
+  // Function to update microphone indicator color
+
+  document.addEventListener('keydown', (event) => {
+    if (event.key === 's') {
+      handleStart();
+    } else if (event.key === 'm') {
+      handleButtonClick();
+    }
+  });
 </script>
 <div class="overlay">
   <button class="speak-button" id="speak-button" style="display: none;" onclick="handleButtonClick()">Speak</button>

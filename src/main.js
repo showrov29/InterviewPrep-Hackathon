@@ -1,6 +1,7 @@
 import * as THREE from 'three';
 import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader.js';
 import Stats from 'three/examples/jsm/libs/stats.module.js';
+import { VRButton } from 'three/examples/jsm/webxr/VRButton.js';
 
 let thisVisemeIndex = 0;
 let lastVisemeIndex = 0;
@@ -15,6 +16,8 @@ camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight,
 // Create a renderer
 renderer = new THREE.WebGLRenderer();
 renderer.setSize(window.innerWidth, window.innerHeight);
+renderer.xr.enabled = true; // Enable VR
+document.body.appendChild(VRButton.createButton(renderer)); // Add VR button
 document.body.appendChild(renderer.domElement);
 window.addEventListener('resize', () => {
   camera.aspect = window.innerWidth / window.innerHeight;
@@ -33,6 +36,16 @@ scene.add(ambientLight);
 light = new THREE.DirectionalLight(0xffffff, 5 );
 light.position.set(0, -1, 2);
 scene.add(light);
+
+// Add microphone indicator
+micIndicator = new THREE.Mesh(
+  new THREE.SphereGeometry(0.05, 16, 16),
+  new THREE.MeshBasicMaterial({ color: 0xff0000 })
+);
+micIndicator.position.set(1.55, 1, -2);
+scene.add(micIndicator);
+micIndicator.visible = false;
+
 // Load the GLB model
 const loader = new GLTFLoader();
 loader.load(
@@ -57,27 +70,25 @@ loader.load('sittingHR.glb', function (gltf) {
   scene.position.set(0, 0.4, -0.9)
 });
 
-
 // Animation loop
 function animate() {
-  requestAnimationFrame(animate);
-  renderer.render(scene, camera);
-  stats.update();
-
-  mixer && mixer.update();
-  
+  renderer.setAnimationLoop(() => {
+    renderer.render(scene, camera);
+    stats.update();
+    mixer && mixer.update();
+  });
 }
 animate();
 
-  changeMorphTargetByName=(targetName)=> {
-	if (!avatar) {
-		console.error("Model not loaded yet.");
-		return;
-	}
-  
-  
- avatar.children[0].getObjectByName('Wolf3D_Avatar').morphTargetInfluences[lastVisemeIndex] = 0
-	thisVisemeIndex = dictionary[targetName]||0;
-  avatar.children[0].getObjectByName('Wolf3D_Avatar').morphTargetInfluences[thisVisemeIndex] =1;
+changeMorphTargetByName = (targetName) => {
+  if (!avatar) {
+    console.error("Model not loaded yet.");
+    return;
+  }
+
+  avatar.children[0].getObjectByName('Wolf3D_Avatar').morphTargetInfluences[lastVisemeIndex] = 0;
+  thisVisemeIndex = dictionary[targetName] || 0;
+  avatar.children[0].getObjectByName('Wolf3D_Avatar').morphTargetInfluences[thisVisemeIndex] = 1;
   lastVisemeIndex = thisVisemeIndex;
-}
+};
+

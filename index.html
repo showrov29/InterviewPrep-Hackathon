@@ -78,6 +78,7 @@
   let camera, scene, renderer, avatar, light
   let client = io()
   let isListening = false;
+  let firstTime = true;
   let response = ""
 
   window.onload = async () => {
@@ -85,7 +86,6 @@
   }
 
   function handleButtonClick() {
-    document.getElementById("speak-button").style.display = 'inline-block'
     let user_text = document.getElementById('user-text');
     let button = document.querySelector('button');
 

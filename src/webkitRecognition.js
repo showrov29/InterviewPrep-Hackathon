@@ -39,6 +39,7 @@ recognition.onresult = async (event) => {
 
 
 function startMicrophone() {
+      document.getElementById("speak-button").style.display = 'inline-block'
   recognition.start();
 }
 

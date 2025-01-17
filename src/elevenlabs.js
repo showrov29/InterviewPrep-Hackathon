@@ -17,7 +17,12 @@ async function streamAudioData(audioStream) {
   
   audioElement.onended = function () {
       elevenLabsSocket = new WebSocket(wsUrl);
-      handleButtonClick();
+      if(firstTime){
+        handleButtonClick()
+        firstTime = false
+      } else{
+         startMicrophone();
+      }
   }
 
   // Ensure audioElement is valid before using
@@ -116,7 +121,7 @@ async function getAudioAndCharsFromElevenLabs(text ) {
             stability: 0.2,
             similarity_boost: 0.5,
           },
-          xi_api_key: "sk_214c6a161dd4c840c91ee05c2b4ec36221b52a2f19f755cc",
+          xi_api_key: "sk_6e33f5b66e721da18f8773393324355639c3d0ee0255556b",
         };
         elevenLabsSocket.send(JSON.stringify(bosMessage));
         const textMessage = {

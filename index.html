@@ -143,10 +143,19 @@
     isListening = !isListening;
   }
   function handleStart() {
-    document.getElementById("start-button").style.display = 'none'
-    document.getElementById("toggle-button").style.display = 'none'
-    initSpeech();
+    document.getElementById("start-button").style.display = 'none';
+    document.getElementById("toggle-button").style.display = 'none';
+    document.getElementById("end-button").style.display = 'inline-block';
+    // initSpeech();
   }
+
+  function handleEnd() {
+    document.getElementById("end-button").style.display = 'none';
+    document.getElementById("speak-button").style.display = 'none'
+    
+    // fetch result
+  }
+
   async function initSpeech() {
     getAudioAndCharsFromElevenLabs(response)
   }
@@ -178,8 +187,9 @@
 </script>
 <div class="overlay">
   <button class="speak-button technical fade-in" id="toggle-button" style="display: none;" onclick="handleToggle()">Technical</button>
-  <button class="speak-button fade-in" id="speak-button" style="display: none;" onclick="handleButtonClick()">Speak</button>
+  <button class="speak-button" id="speak-button" style="display: none;" onclick="handleButtonClick()">Speak</button>
   <button class="speak-button fade-in" style="display: none;" id="start-button" onclick="handleStart()">Start</button>
+  <button class="speak-button" style="display: none; background-color: #f44336;" id="end-button" onclick="handleEnd()">End</button>
 </div>
 <div class="conversation-user hidden" id="user-div">
   <p class="capitalize" id="user-text"></p>

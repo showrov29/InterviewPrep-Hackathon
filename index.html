@@ -69,6 +69,29 @@
     .speak-button.listening {
       background-color: #f44336;
     }
+
+    .technical {
+      background-color: rosybrown;
+    }
+    .technical:hover{
+      background-color: burlywood;
+    }
+
+    .hr {
+      background-color: deepskyblue;
+    }
+    .hr:hover{
+      background-color: skyblue;
+    }
+
+    .fade-in {
+      opacity: 0;
+      transition: opacity 0.5s ease-in;
+    }
+
+    .fade-in.show {
+      opacity: 1;
+    }
   </style>
 </head>
 
@@ -85,8 +108,19 @@
   let conversation_count = 0
 
   window.onload = async () => {
-    response = await getResponse(`Hello!`)
-    document.getElementById("start-button").style.display = 'inline-block'
+    response = await getResponse(`Hello!`);
+    const startButton = document.getElementById("start-button");
+    const toggleButton = document.getElementById("toggle-button");
+
+    startButton.classList.add('fade-in');
+    toggleButton.classList.add('fade-in');
+
+    setTimeout(() => {
+      startButton.style.display = 'inline-block';
+      toggleButton.style.display = 'inline-block';
+      startButton.classList.add('show');
+      toggleButton.classList.add('show');
+    }, 10);
   }
 
   function handleButtonClick() {
@@ -110,6 +144,7 @@
   }
   function handleStart() {
     document.getElementById("start-button").style.display = 'none'
+    document.getElementById("toggle-button").style.display = 'none'
     initSpeech();
   }
   async function initSpeech() {
@@ -124,10 +159,27 @@
       handleButtonClick();
     }
   });
+
+  function handleToggle() {
+    const toggleButton = document.getElementById("toggle-button");
+
+    if (toggleButton.classList.contains('technical')) {
+      toggleButton.classList.remove('technical');
+      toggleButton.classList.add('hr');
+      toggleButton.innerHTML = "HR";
+      // Add any additional logic for HR toggle
+    } else {
+      toggleButton.classList.remove('hr');
+      toggleButton.classList.add('technical');
+      toggleButton.innerHTML = "Technical";
+      // Add any additional logic for Technical toggle
+    }
+  }
 </script>
 <div class="overlay">
-  <button class="speak-button" id="speak-button" style="display: none;" onclick="handleButtonClick()">Speak</button>
-  <button class="speak-button" style="display: none;" id="start-button" onclick="handleStart()">Start</button>
+  <button class="speak-button technical fade-in" id="toggle-button" style="display: none;" onclick="handleToggle()">Technical</button>
+  <button class="speak-button fade-in" id="speak-button" style="display: none;" onclick="handleButtonClick()">Speak</button>
+  <button class="speak-button fade-in" style="display: none;" id="start-button" onclick="handleStart()">Start</button>
 </div>
 <div class="conversation-user hidden" id="user-div">
   <p class="capitalize" id="user-text"></p>

@@ -1,0 +1,79 @@
+.overlay {
+    position: absolute;
+    top: 10%;
+    left: 10%;
+    transform: translateX(-50%);
+    z-index: 10;
+  }
+
+  .conversation-user {
+    position: absolute;
+    top: 10%;
+    left: 50%;
+    transform: translateX(-50%);
+    z-index: 10;
+    max-width: 40%;
+    padding: 10px;
+    border-radius: 8px;
+    color: black;
+  }
+
+  .conversation-avatar {
+    position: absolute;
+    top: 20%;
+    left: 50%;
+    transform: translateX(-50%);
+    text-align: justify;
+    max-width: 30%;
+    z-index: 10;
+    padding: 10px;
+    border-radius: 8px;
+    color: black;
+  }
+
+  .speak-button {
+    background-color: #4CAF50;
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    text-align: center;
+    text-decoration: none;
+    display: inline-block;
+    font-size: 16px;
+    margin: 4px 2px;
+    cursor: pointer;
+    border-radius: 12px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    transition: background-color 0.3s ease;
+  }
+
+  .speak-button:hover {
+    background-color: #45a049;
+  }
+
+  .speak-button.listening {
+    background-color: #f44336;
+  }
+
+  .technical {
+    background-color: rosybrown;
+  }
+  .technical:hover{
+    background-color: burlywood;
+  }
+
+  .hr {
+    background-color: deepskyblue;
+  }
+  .hr:hover{
+    background-color: skyblue;
+  }
+
+  .fade-in {
+    opacity: 0;
+    transition: opacity 0.5s ease-in;
+  }
+
+  .fade-in.show {
+    opacity: 1;
+  }

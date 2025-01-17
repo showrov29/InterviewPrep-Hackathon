@@ -28,7 +28,9 @@ recognition.onresult = async (event) => {
     } else {
       interimTranscript += transcript;
       let user_text = document.getElementById('user-text');
-      user_text.innerHTML = interimTranscript;
+      let user_div = document.getElementById('user-div');
+      user_div.style.display = "block"
+      user_text.innerHTML = "You: " + interimTranscript;
     }
   }
 //   console.log(finalTranscript + interimTranscript);
@@ -37,9 +39,12 @@ recognition.onresult = async (event) => {
 
 
 function startMicrophone() {
+      document.getElementById("speak-button-id").style.display = 'inline-block'
+      micIndicator.visible = insideVR && true
   recognition.start();
 }
 
 function stopMicrophone() {
+  micIndicator.visible = insideVR && false
   recognition.stop();
 }

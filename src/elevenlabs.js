@@ -17,7 +17,12 @@ async function streamAudioData(audioStream) {
   
   audioElement.onended = function () {
       elevenLabsSocket = new WebSocket(wsUrl);
-      startMicrophone()
+      if(firstTime){
+        handleButtonClick()
+        firstTime = false
+      } else{
+         startMicrophone();
+      }
   }
 
   // Ensure audioElement is valid before using
@@ -116,7 +121,7 @@ async function getAudioAndCharsFromElevenLabs(text ) {
             stability: 0.2,
             similarity_boost: 0.5,
           },
-          xi_api_key: "780d03e1e76b6b66f941c333610d46e1",
+          xi_api_key: "sk_489691afa2c3109f8f40b8f36fca38f335fdfd296ec4d3c7",
         };
         elevenLabsSocket.send(JSON.stringify(bosMessage));
         const textMessage = {
@@ -160,6 +165,16 @@ async function getAudioAndCharsFromElevenLabs(text ) {
           // console.log("🚀 ~ initialVisemes:", initialVisemes)
           if (firstTime) {
             audioElement.play();
+            let interviewText = document.getElementById("interviewer-text")
+            interviewText.innerHTML = `<p>Interviewer:</p><p>${text}</p>`;
+            let interviewDiv = document.getElementById("interviewer-div");
+            interviewDiv.style.opacity = 0
+            interviewDiv.style.display = "block"
+            for (let i = 0; i <= 1; i += 0.1) {
+              setTimeout(() => {
+              interviewDiv.style.opacity = i;
+              }, i * 500);
+            }
           }
         }
       };

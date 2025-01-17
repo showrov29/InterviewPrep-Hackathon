@@ -11,55 +11,238 @@
   <script src="src/main.js" type="module"></script>
   <script src="src/elevenlabs.js"></script>
   <script src="./src/webkitRecognition.js"></script>
-  <script src="./src/llmResponse.js"></script>
 </head>
+<style>
+  .overlay {
+    position: absolute;
+    top: 10%;
+    left: 10%;
+    transform: translateX(-50%);
+    z-index: 10;
+  }
+
+  .conversation-user {
+    position: absolute;
+    top: 10%;
+    left: 50%;
+    transform: translateX(-50%);
+    z-index: 10;
+    max-width: 40%;
+    padding: 10px;
+    border-radius: 8px;
+    color: black;
+  }
+
+  .conversation-avatar {
+    position: absolute;
+    top: 20%;
+    left: 50%;
+    transform: translateX(-50%);
+    text-align: justify;
+    max-width: 30%;
+    z-index: 10;
+    padding: 10px;
+    border-radius: 8px;
+    color: black;
+  }
+
+  .speak-button {
+    background-color: #4CAF50;
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    text-align: center;
+    text-decoration: none;
+    display: inline-block;
+    font-size: 16px;
+    margin: 4px 2px;
+    cursor: pointer;
+    border-radius: 12px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    transition: background-color 0.3s ease;
+  }
+
+  .speak-button:hover {
+    background-color: #45a049;
+  }
+
+  .speak-button.listening {
+    background-color: #ff6f00;
+  }
+
+  .technical {
+    background-color: rosybrown;
+  }
+
+  .technical:hover {
+    background-color: burlywood;
+  }
+
+  .hr {
+    background-color: deepskyblue;
+  }
+
+  .hr:hover {
+    background-color: skyblue;
+  }
+
+  .fade-in {
+    opacity: 0;
+    transition: opacity 0.5s ease-in;
+  }
+
+  .fade-in.show {
+    opacity: 1;
+  }
+</style>
 
 <body style="overflow: hidden;"></body>
-  <script>
-    let changeMorphTargetByName
-    let camera, scene, renderer, avatar, light
-    let client = io()
+<script>
+  let technical_prompt = `You are Alex, a seasoned software engineer conducting the technical interview for the role of Junior Software Engineer. Your goal is to assess the candidate's technical proficiency, problem-solving abilities, and understanding of core programming concepts. Tailor your questions to gauge the candidate's ability to apply their knowledge to practical scenarios and explain their thought process clearly. Ensure the questions are structured progressively, starting with fundamentals and gradually increasing in complexity.
+  
+  Focus areas for the questions should include:
+  
+  Programming concepts (data structures, algorithms, OOP).
+  Problem-solving and debugging.
+  Familiarity with tools, frameworks, or languages mentioned in the job description.
+  Code optimization and best practices.
+  Their approach to version control (e.g., Git).
+  Ask 8–10 questions, ensuring a mix of conceptual and scenario-based challenges. Encourage the candidate to talk through their thought process for each answer. Provide them with code snippets or short problems as needed for a practical evaluation. Your response should be less than 10 words, setting a professional and collaborative tone. Avoid unnecessary formalities or non-technical discussions. First you'll introduce yourself and make the candidate comfortable.
+  
+  Example:
+  User: Hello!
+  You: Hello, welcome! I’m Alex, your technical interviewer today. Let’s dive into some coding and problem-solving!`
+  let hr_prompt = `You are Steve, a professional interviewer who is evaluating HR part for the job of Junior Software Engineer. He has done his technical round already. Your job is to ask thoughtful and relevant questions to the interviewer that demonstrate the candidate's curiosity, interest in the company, and alignment with its culture. Ensure the questions are polite, engaging, and reflective of the candidate's desire to understand the company's environment, values, and growth opportunities. Avoid overly technical or role-specific questions in this context. Ask 8-10 questions, covering topics like:- Company culture and work environment- Opportunities for professional growth- Team dynamics and communication- Leadership style and expectations- Work-life balance and flexibility Make sure the questions are concise, open-ended, and conversational. Don't offer any tea coffee or anything. Your introductory speech should be around 15 words.
+  
+  For example:
+  user: Hello!
+  You: Hello! welcome, and thank you for taking the time to meet with us today. I hope you're doing well. My name is Steve, and I’m part of the HR team here. It's great to have you here.`
+</script>
+<script src="./src/llmResponse.js"></script>
+<script>
+  let changeMorphTargetByName
+  let camera, scene, renderer, avatar, light
+  let client = io()
+  let isListening = false;
+  let firstTime = true;
+  let response = ""
+  let micIndicator;
+  let insideVR = false;
+  let conversation_count = 0
+  let left_eye = 0
+  let right_eye = 0
+  let blinkFlag = false;
 
-    // function handleButtonClick() {
-    //   let user_text = document.getElementById('user-text');
-    //   user_text.innerHTML = 'Listening...';
-    //   elevenLabsSocket = new WebSocket(wsUrl);
 
-    //   startMicrophone()
-    // }
-    
-  </script>
-  <script>
-    let isListening = false;
+  function handleButtonClick() {
+    let user_text = document.getElementById('user-text');
+    let button = document.getElementById('speak-button-id')
 
-    function handleButtonClick() {
-      let user_text = document.getElementById('user-text');
-      let button = document.querySelector('button');
-
-      if (isListening) {
-        user_text.innerHTML = '';
-        button.innerHTML = 'Speak';
-        stopMicrophone();
-      } else {
-        user_text.innerHTML = 'Listening...';
-        button.innerHTML = 'Stop';
-        elevenLabsSocket = new WebSocket(wsUrl);
-        startMicrophone();
-      }
-
-      isListening = !isListening;
+    if (isListening) {
+      user_text.innerHTML = '';
+      button.innerHTML = 'Speak';
+      button.classList.remove('listening');
+      stopMicrophone();
+    } else {
+      user_text.innerHTML = 'Listening...';
+      button.innerHTML = 'Stop';
+      button.classList.add('listening');
+      elevenLabsSocket = new WebSocket(wsUrl);
+      startMicrophone();
     }
-  </script>
-  <div class="bg-black py-2 items-center justify-center flex flex-row gap-2">
-    <button class="bg-white px-2 rounded" onclick="handleButtonClick()">Speak</button>
-    <p class="text-white capitalize" id="user-text"></p>
-  </div>
-  <div class="bg-black py-2 items-center justify-center flex flex-row gap-2 hidden" id="interviewer-div">
-    <p class="text-white capitalize text-center" id="interviewer-text"></p>
-  </div>
-  <audio id="audioPlayback" hidden controls>
-    <source id="audioSource" type="audio/mp3" src="" />
-  </audio>
+
+    isListening = !isListening;
+  }
+  function handleStart() {
+    document.getElementById("start-button").style.display = 'none';
+    document.getElementById("toggle-button").style.display = 'none';
+    initSpeech();
+  }
+
+  async function handleEnd() {
+    stopMicrophone();
+    document.getElementById("audioPlayback").pause();
+    document.getElementById("end-button").style.display = 'none';
+    document.getElementById("speak-button-id").style.display = 'none';
+    document.getElementById("toggle-button").style.display = 'none';
+    document.getElementById("start-button").style.display = 'none';
+    document.getElementById("user-div").style.display = 'none';
+    document.getElementById("interviewer-div").style.display = 'none';
+    document.getElementById("audioPlayback").style.display = 'none';
+    document.body.style.overflow = 'auto'; // Enable scrolling if needed
+
+    // Hide Three.js canvas
+    renderer.domElement.style.display = 'none';
+
+    // Fetch result
+    let result = await getResponse("", true);
+    console.log("🚀 ~ handleEnd ~ result:", result);
+
+    // Process result to add new lines if asterisk (*) is found
+    result = result.replace(/\:::/g, '<br>');
+
+    // Show result
+    const resultDiv = document.createElement('div');
+    resultDiv.id = 'result-div';
+    resultDiv.style.position = 'absolute';
+    resultDiv.style.lineHeight = 1.6
+    resultDiv.style.top = '50%';
+    resultDiv.style.left = '50%';
+    resultDiv.style.transform = 'translate(-50%, -50%)';
+    resultDiv.style.backgroundColor = 'white';
+    resultDiv.style.padding = '20px';
+    resultDiv.style.borderRadius = '8px';
+    resultDiv.style.boxShadow = '0 4px 6px rgba(0, 0, 0, 0.1)';
+    resultDiv.innerHTML = `<div><p style="font-weight: bold; text-align: center; font-size: 20px">Here is how you did</p><p style="text-align: justify">${result}</p></div>`;
+    document.body.appendChild(resultDiv);
+  }
+
+  async function initSpeech() {
+    response = await getResponse(`Hello!`);
+    getAudioAndCharsFromElevenLabs(response)
+  }
+  // Function to update microphone indicator color
+
+  document.addEventListener('keydown', (event) => {
+    if (event.key === 's') {
+      handleStart();
+    } else if (event.key === 'm') {
+      handleButtonClick();
+    }
+  });
+
+  function handleToggle() {
+    const toggleButton = document.getElementById("toggle-button");
+
+    if (toggleButton.classList.contains('technical')) {
+      toggleButton.classList.remove('technical');
+      toggleButton.classList.add('hr');
+      toggleButton.innerHTML = "HR";
+      updateSystemPrompt(hr_prompt)
+    } else {
+      toggleButton.classList.remove('hr');
+      toggleButton.classList.add('technical');
+      toggleButton.innerHTML = "Technical";
+      updateSystemPrompt(technical_prompt)
+    }
+  }
+</script>
+<div class="overlay">
+  <button class="speak-button hr" id="toggle-button" onclick="handleToggle()">HR</button>
+  <button class="speak-button" id="speak-button-id" style="display: none;" onclick="handleButtonClick()">Speak</button>
+  <button class="speak-button" id="start-button" onclick="handleStart()">Start</button>
+  <button class="speak-button" style="display: none; background-color: #f44336;" id="end-button"
+    onclick="handleEnd()">End</button>
+</div>
+<div class="conversation-user hidden" id="user-div">
+  <p class="capitalize" id="user-text"></p>
+</div>
+<div class="conversation-avatar hidden" id="interviewer-div">
+  <p class="capitalize" id="interviewer-text"></p>
+</div>
+<audio id="audioPlayback" hidden controls>
+  <source id="audioSource" type="audio/mp3" src="" />
+</audio>
 </body>
 
 </html>

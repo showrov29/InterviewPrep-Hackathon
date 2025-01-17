@@ -7,6 +7,10 @@ let thisVisemeIndex = 0;
 let lastVisemeIndex = 0;
 let dictionary;
 let mixer;
+let blinkLeftIndex
+
+let blinkRightIndex
+
 
 // Create the scene
 scene = new THREE.Scene();
@@ -66,6 +70,9 @@ loader.load('sittingHR.glb', function (gltf) {
   let seat = mixer.clipAction(clips[0]);
   seat.play();
   dictionary = avatar.children[0].getObjectByName('Wolf3D_Avatar').morphTargetDictionary;
+  blinkLeftIndex = dictionary["eyeBlinkLeft"];
+
+  blinkRightIndex = dictionary["eyeBlinkRight"];
   scene.add(avatar);
   avatar.position.set(0, -1.65, -0.5);
   scene.position.set(0, 0.4, -0.9)
@@ -78,7 +85,36 @@ function animate() {
     renderer.render(scene, camera);
     stats.update();
     mixer && mixer.update(delta);
+    makeBlink(delta);
   });
+}
+let blinkDir = 1
+function getRandomInterval() {
+  return Math.random() * 3000 + 1000; // Random interval between 1 and 4 seconds
+}
+
+function triggerBlink() {
+  blinkFlag = true;
+  setTimeout(triggerBlink, getRandomInterval());
+}
+
+setTimeout(triggerBlink, getRandomInterval());
+function makeBlink(delta) {
+  
+  if(avatar && blinkFlag){
+    if(left_eye > 1 ){
+      blinkDir = -1
+    }
+    if(left_eye < 0){
+      blinkDir = 1
+      console.log('done')
+      blinkFlag = false;
+    }
+    left_eye += blinkDir * delta*4
+    right_eye += blinkDir * delta*4
+    avatar.children[0].getObjectByName('Wolf3D_Avatar').morphTargetInfluences[blinkLeftIndex] = left_eye
+    avatar.children[0].getObjectByName('Wolf3D_Avatar').morphTargetInfluences[blinkRightIndex] = right_eye
+  }
 }
 animate();
 

@@ -28,7 +28,9 @@ recognition.onresult = async (event) => {
     } else {
       interimTranscript += transcript;
       let user_text = document.getElementById('user-text');
-      user_text.innerHTML = interimTranscript;
+      let user_div = document.getElementById('user-div');
+      user_div.style.display = "block"
+      user_text.innerHTML = "You: " + interimTranscript;
     }
   }
 //   console.log(finalTranscript + interimTranscript);

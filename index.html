@@ -12,54 +12,79 @@
   <script src="src/elevenlabs.js"></script>
   <script src="./src/webkitRecognition.js"></script>
   <script src="./src/llmResponse.js"></script>
+  <style>
+    .overlay {
+      position: absolute;
+      top: 10%;
+      left: 10%;
+      transform: translateX(-50%);
+      z-index: 10;
+    }
+
+    .conversation-user {
+      position: absolute;
+      top: 10%;
+      left: 50%;
+      transform: translateX(-50%);
+      z-index: 10;
+      max-width: 40%;
+      /* background: rgba(0, 0, 0, 0.7); */
+      padding: 10px;
+      border-radius: 8px;
+      color: black;
+    }
+    .conversation-avatar {
+      position: absolute;
+      top: 20%;
+      left: 50%;
+      transform: translateX(-50%);
+      text-align: justify;
+      max-width: 30%;
+      z-index: 10;
+      padding: 10px;
+      border-radius: 8px;
+      color: black;
+    }
+  </style>
 </head>
 
 <body style="overflow: hidden;"></body>
-  <script>
-    let changeMorphTargetByName
-    let camera, scene, renderer, avatar, light
-    let client = io()
+<script>
+  let changeMorphTargetByName
+  let camera, scene, renderer, avatar, light
+  let client = io()
+  let isListening = false;
 
-    // function handleButtonClick() {
-    //   let user_text = document.getElementById('user-text');
-    //   user_text.innerHTML = 'Listening...';
-    //   elevenLabsSocket = new WebSocket(wsUrl);
+  function handleButtonClick() {
+    let user_text = document.getElementById('user-text');
+    let button = document.querySelector('button');
 
-    //   startMicrophone()
-    // }
-    
-  </script>
-  <script>
-    let isListening = false;
-
-    function handleButtonClick() {
-      let user_text = document.getElementById('user-text');
-      let button = document.querySelector('button');
-
-      if (isListening) {
-        user_text.innerHTML = '';
-        button.innerHTML = 'Speak';
-        stopMicrophone();
-      } else {
-        user_text.innerHTML = 'Listening...';
-        button.innerHTML = 'Stop';
-        elevenLabsSocket = new WebSocket(wsUrl);
-        startMicrophone();
-      }
-
-      isListening = !isListening;
+    if (isListening) {
+      user_text.innerHTML = '';
+      button.innerHTML = 'Speak';
+      stopMicrophone();
+    } else {
+      user_text.innerHTML = 'Listening...';
+      button.innerHTML = 'Stop';
+      elevenLabsSocket = new WebSocket(wsUrl);
+      startMicrophone();
     }
-  </script>
-  <div class="bg-black py-2 items-center justify-center flex flex-row gap-2">
-    <button class="bg-white px-2 rounded" onclick="handleButtonClick()">Speak</button>
-    <p class="text-white capitalize" id="user-text"></p>
-  </div>
-  <div class="bg-black py-2 items-center justify-center flex flex-row gap-2 hidden" id="interviewer-div">
-    <p class="text-white capitalize text-center" id="interviewer-text"></p>
-  </div>
-  <audio id="audioPlayback" hidden controls>
-    <source id="audioSource" type="audio/mp3" src="" />
-  </audio>
+
+    isListening = !isListening;
+  }
+</script>
+<div class="overlay">
+  <button class="bg-white px-2 rounded" onclick="handleButtonClick()">Speak</button>
+</div>
+<div class="conversation-user hidden" id="user-div">
+  <p class="capitalize" id="user-text"></p>
+</div>
+<div class="conversation-avatar hidden" id="interviewer-div">
+  <p class="capitalize" id="interviewer-text"></p>
+</div>
+<audio id="audioPlayback" hidden controls>
+  <source id="audioSource" type="audio/mp3" src="" />
+</audio>
 </body>
 
 </html>

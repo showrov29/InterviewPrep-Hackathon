@@ -32,6 +32,7 @@
       border-radius: 8px;
       color: black;
     }
+
     .conversation-avatar {
       position: absolute;
       top: 20%;
@@ -77,8 +78,14 @@
   let camera, scene, renderer, avatar, light
   let client = io()
   let isListening = false;
+  let response = ""
+
+  window.onload = async () => {
+    response = await getResponse(`Hello! I'm here for an interview session.`)
+  }
 
   function handleButtonClick() {
+    document.getElementById("speak-button").style.display = 'inline-block'
     let user_text = document.getElementById('user-text');
     let button = document.querySelector('button');
 
@@ -97,10 +104,12 @@
 
     isListening = !isListening;
   }
-  function handleStart(){
-    handleButtonClick();
+  function handleStart() {
     document.getElementById("start-button").style.display = 'none'
-    document.getElementById("speak-button").style.display = 'inline-block'
+    initSpeech();
+  }
+  async function initSpeech() {
+    getAudioAndCharsFromElevenLabs(response)
   }
 </script>
 <div class="overlay">

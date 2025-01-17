@@ -36,9 +36,15 @@ function updateSystemPrompt(prompt){
 
 async function getResponse(text, feedback) {
     if(feedback){
+        data.model = "llama-3.3-70b-versatile"
+        data.max_tokens = 1024
         data.messages.push({
             role : "system",
-            content: "Based on the conversation, write a summary or result of the interview round."
+            content: `The interview session has been ended. Based on the conversation, write a summary or result of the interview round. Write with you word. Give a point based summary. Add score out of 10 for every point. Don't give markdown. Add - before each point. End each line with a :::`
+        })
+        data.messages.push({
+            role : "user",
+            content: "How did I do? Give me a point based summary. Don't give markdown. Write them line by line separated by :::"
         })
     }
     else{

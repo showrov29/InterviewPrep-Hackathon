@@ -19,6 +19,8 @@ renderer.setSize(window.innerWidth, window.innerHeight);
 renderer.xr.enabled = true; // Enable VR
 document.body.appendChild(VRButton.createButton(renderer)); // Add VR button
 document.body.appendChild(renderer.domElement);
+
+
 window.addEventListener('resize', () => {
   camera.aspect = window.innerWidth / window.innerHeight;
   camera.updateProjectionMatrix();

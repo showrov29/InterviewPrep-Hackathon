@@ -23,11 +23,24 @@ let data = {
 };
 
 async function getResponse(text) {
+    conversation_count += 1
     console.log(data)
-    data.messages.push({
-        role: "user",
-        content: text,
-    });
+    if(conversation_count >10){
+        data.messages.push({
+            role : "system",
+            content: "You can end the interview session now. Give some feedback to the user, how he did."
+        })
+        data.messages.push({
+            role: "user",
+            content: text,
+        });
+    }
+    else{
+        data.messages.push({
+            role: "user",
+            content: text,
+        });
+    }
     return axios
         .post(url, data, {
             headers: {

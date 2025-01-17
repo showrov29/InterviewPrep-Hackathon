@@ -34,25 +34,34 @@ function updateSystemPrompt(prompt){
     };
 }
 
-async function getResponse(text) {
-    conversation_count += 1
-    console.log(data)
-    if(conversation_count >10){
+async function getResponse(text, feedback) {
+    if(feedback){
         data.messages.push({
             role : "system",
-            content: "You can end the interview session now. Give some feedback to the user, how he did."
+            content: "Based on the conversation, write a summary or result of the interview round."
         })
-        data.messages.push({
-            role: "user",
-            content: text,
-        });
     }
     else{
-        data.messages.push({
-            role: "user",
-            content: text,
-        });
+        conversation_count += 1
+        console.log(data)
+        if(conversation_count >10){
+            data.messages.push({
+                role : "system",
+                content: "You can end the interview session now. Give some feedback to the user, how he did."
+            })
+            data.messages.push({
+                role: "user",
+                content: text,
+            });
+        }
+        else{
+            data.messages.push({
+                role: "user",
+                content: text,
+            });
+        }
     }
+    
     return axios
         .post(url, data, {
             headers: {

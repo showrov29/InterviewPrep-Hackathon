@@ -1,6 +1,4 @@
-<p align="center" style="color:orange; font-weight:bold; font-size:30px">
-   This App Works in both VR and Web
-</p>
+<strong><h2 align=center>This App Works in both VR and Web</h2></strong>
 
 # InterviewPrep-Hackathon
 

@@ -121,7 +121,7 @@ async function getAudioAndCharsFromElevenLabs(text ) {
             stability: 0.2,
             similarity_boost: 0.5,
           },
-          xi_api_key: "sk_8898c7f068cbd5d2a98bdcb6977279f90be22837162667c4",
+          xi_api_key: "sk_489691afa2c3109f8f40b8f36fca38f335fdfd296ec4d3c7",
         };
         elevenLabsSocket.send(JSON.stringify(bosMessage));
         const textMessage = {

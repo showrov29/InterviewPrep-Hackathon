@@ -35,6 +35,7 @@ function updateSystemPrompt(prompt){
 }
 
 async function getResponse(text, feedback) {
+
     if(feedback){
         data.model = "llama-3.3-70b-versatile"
         data.max_tokens = 1024
@@ -48,8 +49,12 @@ async function getResponse(text, feedback) {
         })
     }
     else{
+        let end_button = document.getElementById("end-button")
+        if(end_button.style.display == 'none' && conversation_count>2){
+            console.log('enabling end')
+            end_button.style.display = 'inline-block';
+        }
         conversation_count += 1
-        console.log(data)
         if(conversation_count >10){
             data.messages.push({
                 role : "system",

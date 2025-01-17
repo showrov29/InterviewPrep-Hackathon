@@ -81,6 +81,7 @@
   let firstTime = true;
   let response = ""
   let micIndicator;
+  let insideVR = false;
 
   window.onload = async () => {
     response = await getResponse(`Hello!`)

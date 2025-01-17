@@ -40,11 +40,11 @@ recognition.onresult = async (event) => {
 
 function startMicrophone() {
       document.getElementById("speak-button").style.display = 'inline-block'
-      micIndicator.visible = true
+      micIndicator.visible = insideVR && true
   recognition.start();
 }
 
 function stopMicrophone() {
-  micIndicator.visible = false
+  micIndicator.visible = insideVR && false
   recognition.stop();
 }

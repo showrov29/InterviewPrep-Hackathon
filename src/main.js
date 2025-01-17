@@ -92,3 +92,12 @@ changeMorphTargetByName = (targetName) => {
   lastVisemeIndex = thisVisemeIndex;
 };
 
+// Show micIndicator only in VR
+renderer.xr.addEventListener('sessionstart', () => {
+  insideVR = true
+});
+
+renderer.xr.addEventListener('sessionend', () => {
+  insideVR = false;
+});
+

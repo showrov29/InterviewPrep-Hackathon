@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Dashboard</title>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 0;
+      padding: 0;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      height: 100vh;
+      background-color: #f0f0f0;
+    }
+    #chart-container {
+      width: 80%;
+      max-width: 800px;
+      margin-bottom: 20px;
+    }
+    #circular-indicator {
+      width: 100px;
+      height: 100px;
+      border-radius: 50%;
+      background-color: #4caf50;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: white;
+      font-size: 24px;
+      margin-bottom: 20px;
+    }
+    #description-modal {
+      width: 80%;
+      max-width: 600px;
+      padding: 20px;
+      background-color: white;
+      border-radius: 8px;
+      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+      text-align: center;
+    }
+  </style>
+</head>
+<body>
+  <div id="chart-container">
+    <canvas id="line-chart"></canvas>
+  </div>
+  <div id="circular-indicator">75%</div>
+  <div id="description-modal">
+    <h2>Description</h2>
+    <p>This is a description modal. You can add any content here to describe the data or provide additional information.</p>
+  </div>
+
+  <script>
+    const ctx = document.getElementById('line-chart').getContext('2d');
+    const lineChart = new Chart(ctx, {
+      type: 'line',
+      data: {
+        labels: ['January', 'February', 'March', 'April', 'May', 'June', 'July'],
+        datasets: [
+          {
+            label: 'Dataset 1',
+            data: [65, 59, 80, 81, 56, 55, 40],
+            borderColor: 'rgba(75, 192, 192, 1)',
+            borderWidth: 2,
+            fill: false
+          },
+          {
+            label: 'Dataset 2',
+            data: [28, 48, 40, 19, 86, 27, 90],
+            borderColor: 'rgba(153, 102, 255, 1)',
+            borderWidth: 2,
+            fill: false
+          }
+        ]
+      },
+      options: {
+        responsive: true,
+        scales: {
+          x: {
+            display: true,
+            title: {
+              display: true,
+              text: 'Month'
+            }
+          },
+          y: {
+            display: true,
+            title: {
+              display: true,
+              text: 'Value'
+            }
+          }
+        }
+      }
+    });
+  </script>
+</body>
+</html>

@@ -50,7 +50,9 @@ async function start() {
     app.get('/', (req, res) => {
       res.sendFile(path.resolve(__dirname, 'index.html'));
     });
-
+app.get('/dashboard', (req, res) => {
+      res.sendFile(path.resolve(__dirname, 'dashboard.html'));
+    });
     // Start the server
     server.listen(3300, () => {
       console.log('Server running at http://localhost:3300');

@@ -180,21 +180,7 @@ const connect = async (prompt) => {
   socket.on("open", () => {
     handleWebSocketOpenEvent();
 
-    if(document.getElementById('toggle-button').textContent == 'Technical'){
-      socket.sendUserInput(technical_prompt);
-      console.log('technical');
-
-    }
-    else if(document.getElementById('toggle-button').textContent == 'real-life'){
-      // socket.sendUserInput(technical_prompt);
-      console.log('real-life');
-      
-    }
-    else if(document.getElementById('toggle-button').textContent == 'HR'){
-      console.log('hr');
-      
-      socket.sendUserInput(hr_prompt);
-    }
+    socket.sendUserInput(current_prompt);
 
     // socket?.sendMessage(userMessage);
   });

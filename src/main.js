@@ -227,11 +227,12 @@ async function captureAudio() {
 }
 let user_conv_count = 0;
 let oncer = true;
+let interimPromptSent = false;
 async function handleSocketMessageEvent(message) {
 	console.log("🚀 ~ handleSocketMessageEvent ~ message:", message);
   user_conv_count = conversations.filter(conversation => conversation.role === 'user').length - 1;
   console.log("🚀 ~ handleSocketMessageEvent ~ user_conv_count:", user_conv_count)
-  if(message.type == "assistant_end" && user_conv_count>2 && oncer){
+  if(message.type == "assistant_end" && user_conv_count>10 && oncer){
     oncer = false;
         console.log("🚀 ~ handleSocketMessageEvent ~ assistant_end");
         if(current_role === 'technical'){
@@ -243,10 +244,31 @@ async function handleSocketMessageEvent(message) {
           socket.sendUserInput(end_barista_prompt);
         }
 }
+// if (score < 0 && !interimPromptSent) {
+//   interimPromptSent = true;
+//   socket.sendUserInput(interim_prompt);
+// } else if (score > 0 && !interimPromptSent) {
+//   interimPromptSent = true;
+//   socket.sendUserInput(interim_prompt);
+// }
+if (message.type == "assistant_end" && user_conv_count > 2 && oncer) {
+  oncer = false;
+  console.log("🚀 ~ handleSocketMessageEvent ~ assistant_end");
+  if (current_role === 'technical') {
+    socket.sendUserInput(end_technical_prompt);
+  } else if (current_role === 'hr') {
+    socket.sendUserInput(end_hr_prompt);
+  } else if (current_role === 'barista') {
+    socket.sendUserInput(end_barista_prompt);
+  }
+}
+
+
 if(message.type == "assistant_end" && sessionEnded){
   socket.close();
   audioStream.getTracks().forEach(track => track.stop());
   // ended. now call dashboard
+  handleEnd();
 }
 	switch (message.type) {
 		// save chat_group_id to resume chat if disconnected
@@ -432,7 +454,7 @@ document.addEventListener('keydown', (event) => {
     renderer.domElement.style.display = 'none';
 
     // Fetch result
-    let result = await getResponse("", true);
+    let result = await getFinalFeedback();
     console.log("🚀 ~ handleEnd ~ result:", result);
 
     // Process result to add new lines if asterisk (*) is found
@@ -470,6 +492,7 @@ document.addEventListener('keydown', (event) => {
   function updateConversationUI() {
     const conversationContainer = document.getElementById('conversation');
     conversationContainer.innerHTML = ''; // Clear existing content
+    conversationContainer.classList.add('auto-scroll');
     conversationContainer.style.position = 'absolute';
     conversationContainer.style.top = '10px';
     conversationContainer.style.right = '10px';
@@ -539,6 +562,9 @@ document.addEventListener('keydown', (event) => {
   
       conversationContainer.appendChild(messageDiv);
     });
+  
+    // Scroll to the bottom
+    conversationContainer.scrollTop = conversationContainer.scrollHeight;
   }
   
   function getEmotionColor(emotion, score) {

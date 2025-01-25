@@ -149,6 +149,11 @@
     background-color: #4CAF50;
     transition: width 0.3s ease;
   }
+
+  .auto-scroll {
+    overflow-y: auto;
+    max-height: 90vh;
+  }
 </style>
 
 <body style="overflow: hidden;">
@@ -176,6 +181,48 @@
     const url = "https://api.groq.com/openai/v1/chat/completions";
     const grokApiKey =
       "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";
+    async function getFinalFeedback() {
+      let tempData = {
+        messages: [
+          ...conversations
+        ],
+        "model": "llama-3.3-70b-versatile",
+        "temperature": 1,
+        "max_tokens": 1024,
+        "top_p": 1,
+        "stream": false,
+        "stop": null
+      }
+      tempData.messages = tempData.messages.map(message => {
+        const { topThreeEmotions, ...rest } = message;
+        return rest;
+      });
+      tempData.messages.push({
+        role: "system",
+        content: `The interview session has been ended. Based on the conversation, write a summary or result of the interview round. Write with you word. Give a point based summary. Add score out of 10 for every point. Don't give markdown. Add - before each point. End each line with a :::`
+      })
+      tempData.messages.push({
+        role: "user",
+        content: "How did I do? Give me a point based summary. Don't give markdown. Write them line by line separated by :::"
+      })
+
+      return axios
+        .post(url, tempData, {
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${grokApiKey}`,
+          },
+        })
+        .then((response) => {
+          console.log("🚀 ~ .then ~ response:", response)
+          let responseLLM = response.data.choices[0].message.content;
+        
+          return responseLLM;
+        })
+        .catch((error) => {
+          console.error("Error:", error);
+        });
+    }
     function getFeedback(lastResponse) {
       let tempData = {
         messages: [

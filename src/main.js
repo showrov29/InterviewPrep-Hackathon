@@ -16,7 +16,7 @@ import {
 let client, socket, recorder, audioStream, chatGroupId, isPlaying, currentAudio;
 let connected;
 let audioQueue = [];
-let conversations = new Proxy([], {
+conversations = new Proxy([], {
   set: function (target, property, value, receiver) {
     target[property] = value;
     if (property !== 'length') {
@@ -227,12 +227,11 @@ async function captureAudio() {
 }
 let user_conv_count = 0;
 let oncer = true;
-let interimPromptSent = false;
 async function handleSocketMessageEvent(message) {
 	console.log("🚀 ~ handleSocketMessageEvent ~ message:", message);
   user_conv_count = conversations.filter(conversation => conversation.role === 'user').length - 1;
   console.log("🚀 ~ handleSocketMessageEvent ~ user_conv_count:", user_conv_count)
-  if(message.type == "assistant_end" && user_conv_count>10 && oncer){
+  if(message.type == "assistant_end" && user_conv_count>15 && oncer){
     oncer = false;
         console.log("🚀 ~ handleSocketMessageEvent ~ assistant_end");
         if(current_role === 'technical'){
@@ -251,7 +250,7 @@ async function handleSocketMessageEvent(message) {
 //   interimPromptSent = true;
 //   socket.sendUserInput(interim_prompt);
 // }
-if (message.type == "assistant_end" && user_conv_count > 2 && oncer) {
+if (message.type == "assistant_end" && user_conv_count > 15 && oncer) {
   oncer = false;
   console.log("🚀 ~ handleSocketMessageEvent ~ assistant_end");
   if (current_role === 'technical') {
@@ -268,7 +267,7 @@ if(message.type == "assistant_end" && sessionEnded){
   socket.close();
   audioStream.getTracks().forEach(track => track.stop());
   // ended. now call dashboard
-  handleEnd();
+  // handleEnd();
 }
 	switch (message.type) {
 		// save chat_group_id to resume chat if disconnected
@@ -457,23 +456,23 @@ document.addEventListener('keydown', (event) => {
     let result = await getFinalFeedback();
     console.log("🚀 ~ handleEnd ~ result:", result);
 
-    // Process result to add new lines if asterisk (*) is found
-    result = result.replace(/\:::/g, '<br>');
+    // // Process result to add new lines if asterisk (*) is found
+    // result = result.replace(/\:::/g, '<br>');
 
-    // Show result
-    const resultDiv = document.createElement('div');
-    resultDiv.id = 'result-div';
-    resultDiv.style.position = 'absolute';
-    resultDiv.style.lineHeight = 1.6
-    resultDiv.style.top = '50%';
-    resultDiv.style.left = '50%';
-    resultDiv.style.transform = 'translate(-50%, -50%)';
-    resultDiv.style.backgroundColor = 'white';
-    resultDiv.style.padding = '20px';
-    resultDiv.style.borderRadius = '8px';
-    resultDiv.style.boxShadow = '0 4px 6px rgba(0, 0, 0, 0.1)';
-    resultDiv.innerHTML = `<div><p style="font-weight: bold; text-align: center; font-size: 20px">Here is how you did</p><p style="text-align: justify">${result}</p></div>`;
-    document.body.appendChild(resultDiv);
+    // // Show result
+    // const resultDiv = document.createElement('div');
+    // resultDiv.id = 'result-div';
+    // resultDiv.style.position = 'absolute';
+    // resultDiv.style.lineHeight = 1.6
+    // resultDiv.style.top = '50%';
+    // resultDiv.style.left = '50%';
+    // resultDiv.style.transform = 'translate(-50%, -50%)';
+    // resultDiv.style.backgroundColor = 'white';
+    // resultDiv.style.padding = '20px';
+    // resultDiv.style.borderRadius = '8px';
+    // resultDiv.style.boxShadow = '0 4px 6px rgba(0, 0, 0, 0.1)';
+    // resultDiv.innerHTML = `<div><p style="font-weight: bold; text-align: center; font-size: 20px">Here is how you did</p><p style="text-align: justify">${result}</p></div>`;
+    // document.body.appendChild(resultDiv);
   }
 
   async function initSpeech() {

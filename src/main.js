@@ -193,9 +193,9 @@ renderer.xr.addEventListener('sessionend', () => {
 const connect = async (prompt) => {
   if (!client) {
     client = new HumeClient({
-      apiKey: "6ADRq4ypcI2IV6WlMnIEC31bK6WnYAgmPBLQQHZAgRGmDCAr",
+      apiKey: "1hNtzZBkVzpvurVq2e38gqsUcEorLAXElG6b2nQB3pMU8ZUb",
       secretKey:
-        "2VCOgvyCoBDJHXg7PqjZWjelQPT3ONNtx72p52eLFFZbHaYtvw7ev769O2VUEtDL",
+        "N7k7VzhYwLcvA2WS9zR7tncItT0wAGnhewMF9jlGY9DG7v64mglWlHx8pEAddxQx",
     });
   }
 
@@ -484,7 +484,7 @@ document.addEventListener('keydown', (event) => {
     conversationContainer.style.borderRadius = '8px';
     conversationContainer.style.boxShadow = '0 4px 6px rgba(0, 0, 0, 0.1)';
   
-    conversations.forEach(({ role, content, topThreeEmotions }) => {
+    conversations.slice(1).forEach(({ role, content, topThreeEmotions }) => {
       const messageDiv = document.createElement('div');
       messageDiv.classList.add('message', role);
       messageDiv.style.border = '1px solid #ccc';
@@ -518,13 +518,13 @@ document.addEventListener('keydown', (event) => {
         const emotionSpan = document.createElement('span');
         emotionSpan.classList.add('emotion');
         emotionSpan.style.display = 'inline-block';
-        emotionSpan.style.width = '20px';
+        emotionSpan.style.width = `${((Number(score)*100).toFixed(2))}%`;
         emotionSpan.style.height = '5px';
         emotionSpan.style.backgroundColor = getEmotionColor(emotion, score);
         emotionContainer.appendChild(emotionSpan);
   
         const emotionValue = document.createElement('div');
-        emotionValue.textContent = `${(score * 100).toFixed(2)}%`;
+        emotionValue.textContent = `${((Number(score)*100).toFixed(2))}%`;
         emotionValue.style.fontSize = '10px';
         emotionValue.style.marginTop = '2px';
         emotionContainer.appendChild(emotionValue);
@@ -546,12 +546,54 @@ document.addEventListener('keydown', (event) => {
   
   function getEmotionColor(emotion, score) {
     const colors = {
-      happiness: 'yellow',
-      sadness: 'blue',
-      anger: 'red',
-      fear: 'purple',
-      surprise: 'orange',
-      disgust: 'green'
+      admiration: "midnightblue",
+      adoration: "crimson",
+      aestheticAppreciation: "indigo",
+      amusement: "goldenrod",
+      anger: "darkred",
+      anxiety: "slategray",
+      awe: "navy",
+      awkwardness: "darkorange",
+      boredom: "olive",
+      calmness: "steelblue",
+      concentration: "forestgreen",
+      confusion: "darkviolet",
+      contemplation: "darkgreen",
+      contempt: "saddlebrown",
+      contentment: "seagreen",
+      craving: "chocolate",
+      desire: "firebrick",
+      determination: "darkblue",
+      disappointment: "dimgray",
+      disgust: "darkolivegreen",
+      distress: "darkslategray",
+      doubt: "mediumslateblue",
+      ecstasy: "darkgoldenrod",
+      embarrassment: "hotpink",
+      empathicPain: "mediumorchid",
+      entrancement: "mediumpurple",
+      envy: "darkgreen",
+      excitement: "darkorange",
+      fear: "black",
+      guilt: "darkblue",
+      horror: "maroon",
+      interest: "darkturquoise",
+      joy: "darkyellow",
+      love: "firebrick",
+      nostalgia: "saddlebrown",
+      pain: "indigo",
+      pride: "goldenrod",
+      realization: "deepskyblue",
+      relief: "mediumseagreen",
+      romance: "darkviolet",
+      sadness: "royalblue",
+      satisfaction: "darkseagreen",
+      shame: "darkgray",
+      surpriseNegative: "goldenrod",
+      surprisePositive: "yellowgreen",
+      sympathy: "cadetblue",
+      tiredness: "dimgray",
+      triumph: "darkgoldenrod"
     };
     return colors[emotion] || 'gray';
   }

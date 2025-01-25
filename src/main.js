@@ -16,6 +16,15 @@ import {
 let client, socket, recorder, audioStream, chatGroupId, isPlaying, currentAudio;
 let connected;
 let audioQueue = [];
+let conversations = new Proxy([], {
+  set: function (target, property, value, receiver) {
+    target[property] = value;
+    if (property !== 'length') {
+      updateConversationUI();
+    }
+    return true;
+  }
+});
 let isActive=true
 let isSpeaking = false
 // hume ai code ends
@@ -253,6 +262,9 @@ async function handleSocketMessageEvent(message) {
 			const { role, content } = message.message;
 			const topThreeEmotions = extractTopThreeEmotions(message);
       conversations.push({role, content, topThreeEmotions})
+      if(conversations.length>6){
+        document.getElementById('end-button').style.display = 'inline-block';
+      }
 			// appendMessage(role, content ?? "", topThreeEmotions);
       console.log("🚀 ~ handleSocketMessageEvent ~ conversations", conversations)
 			break;
@@ -275,6 +287,8 @@ async function handleSocketMessageEvent(message) {
 
 		// stop audio playback, clear audio playback queue, and update audio playback state on interrupt
 		case "user_interruption":
+      console.log("🚀 ~ handleSocketMessageEvent ~ user_interruption");
+      
 			stopAudio();
 			break;
 
@@ -331,6 +345,8 @@ function stopAudio() {
 
 	// clear the audioQueue
 	audioQueue.length = 0;
+  console.log("🚀 ~ stopAudio ~ audioQueue");
+  
 }
 
 
@@ -372,7 +388,8 @@ document.addEventListener('keydown', (event) => {
   }
 
   async function handleEnd() {
-    stopMicrophone();
+    stopAudio();
+    // stopMicrophone();
     document.getElementById("audioPlayback").pause();
     document.getElementById("end-button").style.display = 'none';
     document.getElementById("speak-button-id").style.display = 'none';
@@ -380,6 +397,8 @@ document.addEventListener('keydown', (event) => {
     document.getElementById("start-button").style.display = 'none';
     document.getElementById("user-div").style.display = 'none';
     document.getElementById("interviewer-div").style.display = 'none';
+    document.getElementById("conversation").style.display = 'none';
+    document.getElementById("score-slider-container").style.display = 'none';
     document.getElementById("audioPlayback").style.display = 'none';
     document.body.style.overflow = 'auto'; // Enable scrolling if needed
 
@@ -418,5 +437,134 @@ document.addEventListener('keydown', (event) => {
  
 
   document.getElementById('start-button').addEventListener('click', handleStart);
+  document.getElementById('end-button').addEventListener('click', handleEnd);
   // document.getElementById('toggle-button').addEventListener('click', handleToggle);
   document.getElementById('end-button').addEventListener('click', handleEnd);
+
+  function updateConversationUI() {
+    const conversationContainer = document.getElementById('conversation');
+    conversationContainer.innerHTML = ''; // Clear existing content
+    conversationContainer.style.position = 'absolute';
+    conversationContainer.style.top = '10px';
+    conversationContainer.style.right = '10px';
+    conversationContainer.style.width = '300px';
+    conversationContainer.style.maxHeight = '90vh';
+    conversationContainer.style.overflowY = 'auto';
+    conversationContainer.style.backgroundColor = 'rgba(255, 255, 255, 0.9)';
+    conversationContainer.style.padding = '10px';
+    conversationContainer.style.borderRadius = '8px';
+    conversationContainer.style.boxShadow = '0 4px 6px rgba(0, 0, 0, 0.1)';
+  
+    conversations.slice(1).forEach(({ role, content, topThreeEmotions }) => {
+      const messageDiv = document.createElement('div');
+      messageDiv.classList.add('message', role);
+      messageDiv.style.border = '1px solid #ccc';
+      messageDiv.style.padding = '10px';
+      messageDiv.style.marginBottom = '10px';
+      messageDiv.style.borderRadius = '5px';
+      messageDiv.style.backgroundColor = role === 'user' ? '#e0f7fa' : '#f1f8e9';
+  
+      const contentDiv = document.createElement('div');
+      contentDiv.textContent = content;
+      messageDiv.appendChild(contentDiv);
+  
+      const emotionsDiv = document.createElement('div');
+      emotionsDiv.classList.add('emotions');
+      emotionsDiv.style.display = 'flex';
+      emotionsDiv.style.justifyContent = 'space-between';
+  
+      topThreeEmotions.forEach(({ emotion, score }) => {
+        const emotionContainer = document.createElement('div');
+        emotionContainer.style.display = 'flex';
+        emotionContainer.style.flexDirection = 'column';
+        emotionContainer.style.alignItems = 'center';
+        emotionContainer.style.marginBottom = '5px';
+  
+        const emotionName = document.createElement('div');
+        emotionName.textContent = emotion;
+        emotionName.style.fontSize = '12px';
+        emotionName.style.marginBottom = '2px';
+        emotionContainer.appendChild(emotionName);
+  
+        const emotionSpan = document.createElement('span');
+        emotionSpan.classList.add('emotion');
+        emotionSpan.style.display = 'inline-block';
+        emotionSpan.style.width = `${((Number(score)*100).toFixed(2))}%`;
+        emotionSpan.style.height = '5px';
+        emotionSpan.style.backgroundColor = getEmotionColor(emotion, score);
+        emotionContainer.appendChild(emotionSpan);
+  
+        const emotionValue = document.createElement('div');
+        emotionValue.textContent = `${((Number(score)*100).toFixed(2))}%`;
+        emotionValue.style.fontSize = '10px';
+        emotionValue.style.marginTop = '2px';
+        emotionContainer.appendChild(emotionValue);
+  
+        emotionsDiv.appendChild(emotionContainer);
+      });
+  
+      messageDiv.appendChild(emotionsDiv);
+  
+      if (role === 'user') {
+        messageDiv.style.textAlign = 'right';
+      } else if (role === 'assistant') {
+        messageDiv.style.textAlign = 'left';
+      }
+  
+      conversationContainer.appendChild(messageDiv);
+    });
+  }
+  
+  function getEmotionColor(emotion, score) {
+    const colors = {
+      admiration: "midnightblue",
+      adoration: "crimson",
+      aestheticAppreciation: "indigo",
+      amusement: "goldenrod",
+      anger: "darkred",
+      anxiety: "slategray",
+      awe: "navy",
+      awkwardness: "darkorange",
+      boredom: "olive",
+      calmness: "steelblue",
+      concentration: "forestgreen",
+      confusion: "darkviolet",
+      contemplation: "darkgreen",
+      contempt: "saddlebrown",
+      contentment: "seagreen",
+      craving: "chocolate",
+      desire: "firebrick",
+      determination: "darkblue",
+      disappointment: "dimgray",
+      disgust: "darkolivegreen",
+      distress: "darkslategray",
+      doubt: "mediumslateblue",
+      ecstasy: "darkgoldenrod",
+      embarrassment: "hotpink",
+      empathicPain: "mediumorchid",
+      entrancement: "mediumpurple",
+      envy: "darkgreen",
+      excitement: "darkorange",
+      fear: "black",
+      guilt: "darkblue",
+      horror: "maroon",
+      interest: "darkturquoise",
+      joy: "darkyellow",
+      love: "firebrick",
+      nostalgia: "saddlebrown",
+      pain: "indigo",
+      pride: "goldenrod",
+      realization: "deepskyblue",
+      relief: "mediumseagreen",
+      romance: "darkviolet",
+      sadness: "royalblue",
+      satisfaction: "darkseagreen",
+      shame: "darkgray",
+      surpriseNegative: "goldenrod",
+      surprisePositive: "yellowgreen",
+      sympathy: "cadetblue",
+      tiredness: "dimgray",
+      triumph: "darkgoldenrod"
+    };
+    return colors[emotion] || 'gray';
+  }

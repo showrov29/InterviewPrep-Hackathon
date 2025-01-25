@@ -152,7 +152,7 @@
 </style>
 
 <body style="overflow: hidden;">
-  <div class="score-slider-container">
+  <div class="score-slider-container" id="score-slider-container">
     <div class="score-slider" id="score-slider"></div>
   </div>
   <!-- <script>
@@ -371,8 +371,8 @@
 
     function updateScoreSlider(score) {
       const slider = document.getElementById('score-slider');
-      let percentage 
-      = Math.abs((score + 5) * 10);
+      let percentage
+        = Math.abs((score + 5) * 10);
       console.log("🚀 ~ updateScoreSlider ~ percentage:", percentage)
       slider.style.width = `${percentage}%`;
       slider.style.backgroundColor = score > 0 ? '#4CAF50' : score < 0 ? '#f44336' : '#ddd';
@@ -390,10 +390,10 @@
         <button onclick="handleToggle('Barista')">Barista</button>
       </div>
     </div>
-    <button class="speak-button" id="speak-button-id" style="display: none;" onclick="handleButtonClick()">Speak</button>
+    <button class="speak-button" id="speak-button-id" style="display: none;"
+      onclick="handleButtonClick()">Speak</button>
     <button class="speak-button" id="start-button">Start</button>
-    <button class="speak-button" style="display: none; background-color: #f44336;" id="end-button"
-      onclick="handleEnd()">End</button>
+    <button class="speak-button" style="display: none; background-color: #f44336;" id="end-button">End</button>
   </div>
   <div class="conversation-user hidden" id="user-div">
     <p class="capitalize" id="user-text"></p>
@@ -401,6 +401,7 @@
   <div class="conversation-avatar hidden" id="interviewer-div">
     <p class="capitalize" id="interviewer-text"></p>
   </div>
+  <div class="conversation" id="conversation"></div>
   <audio id="audioPlayback" hidden controls>
     <source id="audioSource" type="audio/mp3" src="" />
   </audio>

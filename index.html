@@ -14,6 +14,7 @@
   <script src="src/elevenlabs.js"></script>
   <script src="./src/webkitRecognition.js"></script>
   <script src="./src/prompts.js"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
 </head>
 <style>
   .overlay {
@@ -153,6 +154,52 @@
   .auto-scroll {
     overflow-y: auto;
     max-height: 90vh;
+  }
+
+  .modal {
+    display: none;
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 80%;
+    max-width: 600px;
+    background-color: rgba(0, 0, 0, 0.8);
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    z-index: 1000;
+    color: white;
+  }
+
+  .modal.show {
+    display: block;
+  }
+
+  .modal-content {
+    text-align: left;
+  }
+
+  .modal-close {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    background: none;
+    border: none;
+    font-size: 24px;
+    cursor: pointer;
+    color: white;
+  }
+
+  .instructions-icon {
+    font-size: 24px;
+    cursor: pointer;
+    color: #4CAF50;
+    transition: color 0.3s ease;
+  }
+
+  .instructions-icon:hover {
+    color: #45a049;
   }
 </style>
 
@@ -341,6 +388,16 @@
 
     // Example usage:
     updateScoreSlider(score);
+
+    function showInstructions() {
+      const modal = document.getElementById('instructions-modal');
+      modal.classList.add('show');
+    }
+
+    function hideInstructions() {
+      const modal = document.getElementById('instructions-modal');
+      modal.classList.remove('show');
+    }
   </script>
   <div class="overlay">
     <div class="dropdown">
@@ -355,6 +412,7 @@
       onclick="handleButtonClick()">Speak</button>
     <button class="speak-button" id="start-button">Start</button>
     <button class="speak-button" style="display: none; background-color: #f44336;" id="end-button">End</button>
+    <i class="fas fa-info-circle instructions-icon" id="instructions-button" onmouseover="showInstructions()"></i>
   </div>
   <div class="conversation-user hidden" id="user-div">
     <p class="capitalize" id="user-text"></p>
@@ -366,6 +424,21 @@
   <audio id="audioPlayback" hidden controls>
     <source id="audioSource" type="audio/mp3" src="" />
   </audio>
+
+  <div class="modal" id="instructions-modal" onmouseleave="hideInstructions()">
+    <button class="modal-close" onclick="hideInstructions()">&times;</button>
+    <div class="modal-content">
+      <h2>Instructions</h2>
+      <p>Welcome to the InterviewPrep Hackathon app! Here are some instructions to get you started:</p>
+      <ul>
+        <li>Select the role you want to practice from the dropdown menu.</li>
+        <li>Click the "Start" button to begin the interview session.</li>
+        <li>Click the "Speak" button to start speaking and the "Stop" button to stop.</li>
+        <li>Use the "End" button to end the session and get feedback.</li>
+        <li>Hover over the "Instructions" button to view these instructions.</li>
+      </ul>
+    </div>
+  </div>
 </body>
 
 </html>

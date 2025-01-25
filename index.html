@@ -372,6 +372,11 @@
           console.log('Barista selected');
           current_prompt = barista_prompt;
           break;
+        case 'Visa':
+          current_role = 'visa'
+          console.log('visa selected');
+          current_prompt = visa_prompt;
+          break;
         default:
           console.log('Unknown role selected');
       }
@@ -406,6 +411,7 @@
         <button onclick="handleToggle('HR')">HR</button>
         <button onclick="handleToggle('Technical')">Technical</button>
         <button onclick="handleToggle('Barista')">Barista</button>
+        <button onclick="handleToggle('Visa')">Visa</button>
       </div>
     </div>
     <button class="speak-button" id="speak-button-id" style="display: none;"

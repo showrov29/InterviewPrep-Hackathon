@@ -253,6 +253,9 @@ async function handleSocketMessageEvent(message) {
         } else if (current_role === 'barista') {
           socket.sendUserInput(end_barista_prompt);
         }
+        else if(current_role === 'visa'){
+          socket.sendUserInput(end_visa_prompt);
+        }
 }
 // if (score < 0 && !interimPromptSent) {
 //   interimPromptSent = true;
@@ -270,6 +273,9 @@ if (message.type == "assistant_end" && user_conv_count > 15 && oncer) {
     socket.sendUserInput(end_hr_prompt);
   } else if (current_role === 'barista') {
     socket.sendUserInput(end_barista_prompt);
+  }
+  else if(current_role === 'visa'){
+    socket.sendUserInput(end_visa_prompt);
   }
 }
 	switch (message.type) {
@@ -305,7 +311,7 @@ if (message.type == "assistant_end" && user_conv_count > 15 && oncer) {
 
 			const { role, content } = message.message;
 			const topThreeEmotions = extractTopThreeEmotions(message);
-      if(content == end_technical_prompt || content == end_hr_prompt || content == end_barista_prompt){
+      if(content == end_technical_prompt || content == end_hr_prompt || content == end_barista_prompt || content == end_visa_prompt){
         console.log('you can end now')
         sessionEnded = true;
       }
@@ -434,6 +440,8 @@ document.addEventListener('keydown', (event) => {
   function handleStart() {
     document.getElementById("start-button").style.display = 'none';
     document.getElementById("toggle-button").style.display = 'none';
+    document.getElementById("dashboard-button").style.display = 'none';
+    document.getElementById("instructions-button").style.display = 'none';
     initSpeech();
   }
 
@@ -549,9 +557,9 @@ document.addEventListener('keydown', (event) => {
     barsColumn.style.justifyContent = 'space-around';
     contentContainer.appendChild(barsColumn);
 
-    const confidenceBar = createBar('Confidence', result.confidence);
-    const communicationBar = createBar('Communication', result.communication);
-    const attitudeBar = createBar('Attitude', result.attitude);
+    const confidenceBar = createBar(`Confidence (${result.confidence} %)`, result.confidence);
+    const communicationBar = createBar(`Communication Skills (${result.communication} %)`, result.communication);
+    const attitudeBar = createBar(`Attitude (${result.attitude} %)`, result.attitude);
     barsColumn.appendChild(confidenceBar);
     barsColumn.appendChild(communicationBar);
     barsColumn.appendChild(attitudeBar);
@@ -565,7 +573,7 @@ document.addEventListener('keydown', (event) => {
     barsColumn.appendChild(improvementsContainer);
 
     const improvementsTitle = document.createElement('h2');
-    improvementsTitle.textContent = 'Improvements';
+    improvementsTitle.innerHTML = '<b>Improvements</b>';
     improvementsContainer.appendChild(improvementsTitle);
 
     const improvementsList = document.createElement('ul');
@@ -584,7 +592,7 @@ document.addEventListener('keydown', (event) => {
     barsColumn.appendChild(backstoryContainer);
 
     const backstoryTitle = document.createElement('h2');
-    backstoryTitle.textContent = 'Backstory';
+    backstoryTitle.innerHTML = '<b>Backstory</b>';
     backstoryContainer.appendChild(backstoryTitle);
 
     const backstoryContent = document.createElement('p');
@@ -621,7 +629,7 @@ document.addEventListener('keydown', (event) => {
           labels: ['Score'],
           datasets: [{
             data: [result.score, 100 - result.score],
-            backgroundColor: ['#4caf50', '#e0e0e0']
+            backgroundColor: [result.score < 30 ? '#ff0000' : result.score <= 70 ? '#ffeb3b' : '#4caf50', '#e0e0e0']
           }]
         },
         options: {
@@ -890,6 +898,20 @@ script.onload = () => {
           title: {
             display: true,
             text: 'Value'
+          },
+          ticks: {
+            callback: function(value) {
+              return value + '%'; // Add percentage symbol to y-axis labels
+            }
+          }
+        }
+      },
+      plugins: {
+        tooltip: {
+          callbacks: {
+            label: function(tooltipItem) {
+              return tooltipItem.dataset.label + ': ' + tooltipItem.raw + '%'; // Add percentage symbol to tooltip
+            }
           }
         }
       }

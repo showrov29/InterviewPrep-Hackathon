@@ -97,6 +97,7 @@
 </style>
 
 <body style="overflow: hidden;"></body>
+
 <script>
   let technical_prompt = `You are Alex, a seasoned software engineer conducting the technical interview for the role of Junior Software Engineer. Your goal is to assess the candidate's technical proficiency, problem-solving abilities, and understanding of core programming concepts. Tailor your questions to gauge the candidate's ability to apply their knowledge to practical scenarios and explain their thought process clearly. Ensure the questions are structured progressively, starting with fundamentals and gradually increasing in complexity.
   
@@ -203,13 +204,13 @@
   }
   // Function to update microphone indicator color
 
-  document.addEventListener('keydown', (event) => {
-    if (event.key === 's') {
-      handleStart();
-    } else if (event.key === 'm') {
-      handleButtonClick();
-    }
-  });
+  // document.addEventListener('keydown', (event) => {
+  //   if (event.key === 's') {
+  //     handleStart();
+  //   } else if (event.key === 'm') {
+  //     handleButtonClick();
+  //   }
+  // });
 
   function handleToggle() {
     const toggleButton = document.getElementById("toggle-button");

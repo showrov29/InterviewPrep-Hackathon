@@ -18,8 +18,8 @@
 <style>
   .overlay {
     position: absolute;
-    top: 10%;
-    left: 10%;
+    top: 8%;
+    left: 8%;
     transform: translateX(-50%);
     z-index: 10;
   }
@@ -199,7 +199,7 @@
       });
       tempData.messages.push({
         role: "system",
-        content: `The interview session has been ended. Based on the conversation, write in JSON format the feedback for the user. It should include the following fields: Things to improve as "Improvements", overall score as "score", confidence score as "confidence", communication skill score as "communication", attitude score as "communication". scores should be out of 100.
+        content: `The interview session has been ended. Based on the conversation, write in JSON format the feedback for the user. It should include the following fields: Things to improve as "Improvements", overall score as "score", confidence score as "confidence", communication skill score as "communication", attitude score as "communication" and overall topic of the conversation as "backstory". scores should be out of 100. Just give me the exact JSON format showed in the example without any other information or redundant text.
         For example:
         {
         "Improvements": [
@@ -210,13 +210,14 @@
         "score": 20,
         "confidence": 30,
         "communication": 20,
-        "attitude": 40
+        "attitude": 40,
+        "backstory": "The user was asked about the basics of OOP and was unable to answer the questions correctly."
       }
         `
       })
       tempData.messages.push({
-        role: "assistant",
-        content: `How did I do? Give me a JSON format feedback for the me. It should include the following fields: Things to improve as "Improvements", overall score as "score", confidence score as "confidence", communication skill score as "communication", attitude score as "communication". scores should be out of 100.
+        role: "user",
+        content: `How did I do? Give me a JSON format feedback for the me. It should include the following fields: Things to improve as "Improvements", overall score as "score", confidence score as "confidence", communication skill score as "communication", attitude score as "communication" and overall topic of the conversation as "backstory". scores should be out of 100. Just give me the exact JSON format showed in the example without any other information or redundant text.
         For example:
         {
         "Improvements": [
@@ -227,7 +228,8 @@
         "score": 20,
         "confidence": 30,
         "communication": 20,
-        "attitude": 40
+        "attitude": 40,
+        "backstory": "The user was asked about the basics of OOP and was unable to answer the questions correctly."
       }
         `
       })
@@ -342,7 +344,7 @@
   </script>
   <div class="overlay">
     <div class="dropdown">
-      <button class="speak-button" id="toggle-button">Select Role</button>
+      <button class="speak-button" id="toggle-button">HR</button>
       <div class="dropdown-content">
         <button onclick="handleToggle('HR')">HR</button>
         <button onclick="handleToggle('Technical')">Technical</button>

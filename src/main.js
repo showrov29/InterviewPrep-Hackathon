@@ -16,6 +16,7 @@ import {
 let client, socket, recorder, audioStream, chatGroupId, isPlaying, currentAudio;
 let connected;
 let audioQueue = [];
+let conversations = [];
 let isActive=true
 let isSpeaking = false
 // hume ai code ends
@@ -28,6 +29,26 @@ let blinkLeftIndex
 
 let blinkRightIndex
 
+
+let technical_prompt = `You are Alex, a seasoned software engineer conducting the technical interview for the role of Junior Software Engineer. Your goal is to assess the candidate's technical proficiency, problem-solving abilities, and understanding of core programming concepts. Tailor your questions to gauge the candidate's ability to apply their knowledge to practical scenarios and explain their thought process clearly. Ensure the questions are structured progressively, starting with fundamentals and gradually increasing in complexity.
+  
+Focus areas for the questions should include:
+
+Programming concepts (data structures, algorithms, OOP).
+Problem-solving and debugging.
+Familiarity with tools, frameworks, or languages mentioned in the job description.
+Code optimization and best practices.
+Their approach to version control (e.g., Git).
+Ask 8–10 questions, ensuring a mix of conceptual and scenario-based challenges. Encourage the candidate to talk through their thought process for each answer. Provide them with code snippets or short problems as needed for a practical evaluation. Your response should be less than 10 words, setting a professional and collaborative tone. Avoid unnecessary formalities or non-technical discussions. First you'll introduce yourself and make the candidate comfortable.
+
+Example:
+User: Hello!
+You: Hello, welcome! I’m Alex, your technical interviewer today. Let’s dive into some coding and problem-solving!`
+let hr_prompt = `You are Steve, a professional interviewer who is evaluating HR part for the job of Junior Software Engineer. He has done his technical round already. Your job is to ask thoughtful and relevant questions to the interviewer that demonstrate the candidate's curiosity, interest in the company, and alignment with its culture. Ensure the questions are polite, engaging, and reflective of the candidate's desire to understand the company's environment, values, and growth opportunities. Avoid overly technical or role-specific questions in this context. Ask 8-10 questions, covering topics like:- Company culture and work environment- Opportunities for professional growth- Team dynamics and communication- Leadership style and expectations- Work-life balance and flexibility Make sure the questions are concise, open-ended, and conversational. Don't offer any tea coffee or anything. Your introductory speech should be around 15 words.
+
+For example:
+user: Hello!
+You: Hello! welcome, and thank you for taking the time to meet with us today. I hope you're doing well. My name is Steve, and I’m part of the HR team here. It's great to have you here.`
 
 // Create the scene
 scene = new THREE.Scene();
@@ -176,13 +197,22 @@ const connect = async (prompt) => {
 
   socket.on("open", () => {
     handleWebSocketOpenEvent();
-    let hr_prompt = `You are Steve, a professional interviewer who is evaluating HR part for the job of Junior Software Engineer. He has done his technical round already. Your job is to ask thoughtful and relevant questions to the interviewer that demonstrate the candidate's curiosity, interest in the company, and alignment with its culture. Ensure the questions are polite, engaging, and reflective of the candidate's desire to understand the company's environment, values, and growth opportunities. Avoid overly technical or role-specific questions in this context. Ask 8-10 questions, covering topics like:- Company culture and work environment- Opportunities for professional growth- Team dynamics and communication- Leadership style and expectations- Work-life balance and flexibility Make sure the questions are concise, open-ended, and conversational. Don't offer any tea coffee or anything. Your introductory speech should be around 15 words.
-  
-    For example:
-    user: Hello!
-    You: Hello! welcome, and thank you for taking the time to meet with us today. I hope you're doing well. My name is Steve, and I’m part of the HR team here. It's great to have you here.`
-    // console.log(socket);
-    socket.sendUserInput(hr_prompt);
+
+    if(document.getElementById('toggle-button').textContent == 'Technical'){
+      socket.sendUserInput(technical_prompt);
+      console.log('technical');
+
+    }
+    else if(document.getElementById('toggle-button').textContent == 'real-life'){
+      // socket.sendUserInput(technical_prompt);
+      console.log('real-life');
+      
+    }
+    else if(document.getElementById('toggle-button').textContent == 'HR'){
+      console.log('hr');
+      
+      socket.sendUserInput(hr_prompt);
+    }
 
     // socket?.sendMessage(userMessage);
   });
@@ -237,7 +267,9 @@ async function handleSocketMessageEvent(message) {
 
 			const { role, content } = message.message;
 			const topThreeEmotions = extractTopThreeEmotions(message);
-			appendMessage(role, content ?? "", topThreeEmotions);
+      conversations.push({role, content, topThreeEmotions})
+			// appendMessage(role, content ?? "", topThreeEmotions);
+      console.log("🚀 ~ handleSocketMessageEvent ~ conversations", conversations)
 			break;
 
 		// add received audio to the playback queue, and play next audio output
@@ -320,3 +352,96 @@ document.addEventListener('keydown', (event) => {
     handleButtonClick();
   }
 });
+
+
+
+  function handleButtonClick() {
+    let user_text = document.getElementById('user-text');
+    let button = document.getElementById('speak-button-id')
+
+    if (isListening) {
+      user_text.innerHTML = '';
+      button.innerHTML = 'Speak';
+      button.classList.remove('listening');
+      stopMicrophone();
+    } else {
+      user_text.innerHTML = 'Listening...';
+      button.innerHTML = 'Stop';
+      button.classList.add('listening');
+      elevenLabsSocket = new WebSocket(wsUrl);
+      startMicrophone();
+    }
+
+    isListening = !isListening;
+  }
+  function handleStart() {
+    document.getElementById("start-button").style.display = 'none';
+    document.getElementById("toggle-button").style.display = 'none';
+    initSpeech();
+  }
+
+  async function handleEnd() {
+    stopMicrophone();
+    document.getElementById("audioPlayback").pause();
+    document.getElementById("end-button").style.display = 'none';
+    document.getElementById("speak-button-id").style.display = 'none';
+    document.getElementById("toggle-button").style.display = 'none';
+    document.getElementById("start-button").style.display = 'none';
+    document.getElementById("user-div").style.display = 'none';
+    document.getElementById("interviewer-div").style.display = 'none';
+    document.getElementById("audioPlayback").style.display = 'none';
+    document.body.style.overflow = 'auto'; // Enable scrolling if needed
+
+    // Hide Three.js canvas
+    renderer.domElement.style.display = 'none';
+
+    // Fetch result
+    let result = await getResponse("", true);
+    console.log("🚀 ~ handleEnd ~ result:", result);
+
+    // Process result to add new lines if asterisk (*) is found
+    result = result.replace(/\:::/g, '<br>');
+
+    // Show result
+    const resultDiv = document.createElement('div');
+    resultDiv.id = 'result-div';
+    resultDiv.style.position = 'absolute';
+    resultDiv.style.lineHeight = 1.6
+    resultDiv.style.top = '50%';
+    resultDiv.style.left = '50%';
+    resultDiv.style.transform = 'translate(-50%, -50%)';
+    resultDiv.style.backgroundColor = 'white';
+    resultDiv.style.padding = '20px';
+    resultDiv.style.borderRadius = '8px';
+    resultDiv.style.boxShadow = '0 4px 6px rgba(0, 0, 0, 0.1)';
+    resultDiv.innerHTML = `<div><p style="font-weight: bold; text-align: center; font-size: 20px">Here is how you did</p><p style="text-align: justify">${result}</p></div>`;
+    document.body.appendChild(resultDiv);
+  }
+
+  async function initSpeech() {
+    startSpeaking()
+    // response = await getResponse(`Hello!`);
+    // getAudioAndCharsFromElevenLabs(response)
+  }
+
+  function handleToggle() {
+    const toggleButton = document.getElementById("toggle-button");
+
+    if (toggleButton.classList.contains('technical')) {
+      toggleButton.classList.remove('technical');
+      toggleButton.classList.add('hr');
+      toggleButton.innerHTML = "HR";
+      // updateSystemPrompt(hr_prompt)
+    } else {
+      toggleButton.classList.remove('hr');
+      toggleButton.classList.add('technical');
+      toggleButton.innerHTML = "Technical";
+      // updateSystemPrompt(technical_prompt)
+    }
+  }
+
+
+
+  document.getElementById('start-button').addEventListener('click', handleStart);
+  document.getElementById('toggle-button').addEventListener('click', handleToggle);
+  document.getElementById('end-button').addEventListener('click', handleEnd);

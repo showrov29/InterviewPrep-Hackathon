@@ -98,7 +98,7 @@
 
 <body style="overflow: hidden;"></body>
 
-<script>
+<!-- <script>
   let technical_prompt = `You are Alex, a seasoned software engineer conducting the technical interview for the role of Junior Software Engineer. Your goal is to assess the candidate's technical proficiency, problem-solving abilities, and understanding of core programming concepts. Tailor your questions to gauge the candidate's ability to apply their knowledge to practical scenarios and explain their thought process clearly. Ensure the questions are structured progressively, starting with fundamentals and gradually increasing in complexity.
   
   Focus areas for the questions should include:
@@ -118,8 +118,8 @@
   For example:
   user: Hello!
   You: Hello! welcome, and thank you for taking the time to meet with us today. I hope you're doing well. My name is Steve, and I’m part of the HR team here. It's great to have you here.`
-</script>
-<script src="./src/llmResponse.js"></script>
+</script> -->
+<!-- <script src="./src/llmResponse.js"></script> -->
 <script>
   let changeMorphTargetByName
   let camera, scene, renderer, avatar, light
@@ -135,73 +135,73 @@
   let blinkFlag = false;
 
 
-  function handleButtonClick() {
-    let user_text = document.getElementById('user-text');
-    let button = document.getElementById('speak-button-id')
+  // function handleButtonClick() {
+  //   let user_text = document.getElementById('user-text');
+  //   let button = document.getElementById('speak-button-id')
 
-    if (isListening) {
-      user_text.innerHTML = '';
-      button.innerHTML = 'Speak';
-      button.classList.remove('listening');
-      stopMicrophone();
-    } else {
-      user_text.innerHTML = 'Listening...';
-      button.innerHTML = 'Stop';
-      button.classList.add('listening');
-      elevenLabsSocket = new WebSocket(wsUrl);
-      startMicrophone();
-    }
+  //   if (isListening) {
+  //     user_text.innerHTML = '';
+  //     button.innerHTML = 'Speak';
+  //     button.classList.remove('listening');
+  //     stopMicrophone();
+  //   } else {
+  //     user_text.innerHTML = 'Listening...';
+  //     button.innerHTML = 'Stop';
+  //     button.classList.add('listening');
+  //     elevenLabsSocket = new WebSocket(wsUrl);
+  //     startMicrophone();
+  //   }
 
-    isListening = !isListening;
-  }
-  function handleStart() {
-    document.getElementById("start-button").style.display = 'none';
-    document.getElementById("toggle-button").style.display = 'none';
-    initSpeech();
-  }
+  //   isListening = !isListening;
+  // }
+  // function handleStart() {
+  //   document.getElementById("start-button").style.display = 'none';
+  //   document.getElementById("toggle-button").style.display = 'none';
+  //   initSpeech();
+  // }
 
-  async function handleEnd() {
-    stopMicrophone();
-    document.getElementById("audioPlayback").pause();
-    document.getElementById("end-button").style.display = 'none';
-    document.getElementById("speak-button-id").style.display = 'none';
-    document.getElementById("toggle-button").style.display = 'none';
-    document.getElementById("start-button").style.display = 'none';
-    document.getElementById("user-div").style.display = 'none';
-    document.getElementById("interviewer-div").style.display = 'none';
-    document.getElementById("audioPlayback").style.display = 'none';
-    document.body.style.overflow = 'auto'; // Enable scrolling if needed
+  // async function handleEnd() {
+  //   stopMicrophone();
+  //   document.getElementById("audioPlayback").pause();
+  //   document.getElementById("end-button").style.display = 'none';
+  //   document.getElementById("speak-button-id").style.display = 'none';
+  //   document.getElementById("toggle-button").style.display = 'none';
+  //   document.getElementById("start-button").style.display = 'none';
+  //   document.getElementById("user-div").style.display = 'none';
+  //   document.getElementById("interviewer-div").style.display = 'none';
+  //   document.getElementById("audioPlayback").style.display = 'none';
+  //   document.body.style.overflow = 'auto'; // Enable scrolling if needed
 
-    // Hide Three.js canvas
-    renderer.domElement.style.display = 'none';
+  //   // Hide Three.js canvas
+  //   renderer.domElement.style.display = 'none';
 
-    // Fetch result
-    let result = await getResponse("", true);
-    console.log("🚀 ~ handleEnd ~ result:", result);
+  //   // Fetch result
+  //   let result = await getResponse("", true);
+  //   console.log("🚀 ~ handleEnd ~ result:", result);
 
-    // Process result to add new lines if asterisk (*) is found
-    result = result.replace(/\:::/g, '<br>');
+  //   // Process result to add new lines if asterisk (*) is found
+  //   result = result.replace(/\:::/g, '<br>');
 
-    // Show result
-    const resultDiv = document.createElement('div');
-    resultDiv.id = 'result-div';
-    resultDiv.style.position = 'absolute';
-    resultDiv.style.lineHeight = 1.6
-    resultDiv.style.top = '50%';
-    resultDiv.style.left = '50%';
-    resultDiv.style.transform = 'translate(-50%, -50%)';
-    resultDiv.style.backgroundColor = 'white';
-    resultDiv.style.padding = '20px';
-    resultDiv.style.borderRadius = '8px';
-    resultDiv.style.boxShadow = '0 4px 6px rgba(0, 0, 0, 0.1)';
-    resultDiv.innerHTML = `<div><p style="font-weight: bold; text-align: center; font-size: 20px">Here is how you did</p><p style="text-align: justify">${result}</p></div>`;
-    document.body.appendChild(resultDiv);
-  }
+  //   // Show result
+  //   const resultDiv = document.createElement('div');
+  //   resultDiv.id = 'result-div';
+  //   resultDiv.style.position = 'absolute';
+  //   resultDiv.style.lineHeight = 1.6
+  //   resultDiv.style.top = '50%';
+  //   resultDiv.style.left = '50%';
+  //   resultDiv.style.transform = 'translate(-50%, -50%)';
+  //   resultDiv.style.backgroundColor = 'white';
+  //   resultDiv.style.padding = '20px';
+  //   resultDiv.style.borderRadius = '8px';
+  //   resultDiv.style.boxShadow = '0 4px 6px rgba(0, 0, 0, 0.1)';
+  //   resultDiv.innerHTML = `<div><p style="font-weight: bold; text-align: center; font-size: 20px">Here is how you did</p><p style="text-align: justify">${result}</p></div>`;
+  //   document.body.appendChild(resultDiv);
+  // }
 
-  async function initSpeech() {
-    response = await getResponse(`Hello!`);
-    getAudioAndCharsFromElevenLabs(response)
-  }
+  // async function initSpeech() {
+  //   response = await getResponse(`Hello!`);
+  //   getAudioAndCharsFromElevenLabs(response)
+  // }
   // Function to update microphone indicator color
 
   // document.addEventListener('keydown', (event) => {
@@ -212,26 +212,26 @@
   //   }
   // });
 
-  function handleToggle() {
-    const toggleButton = document.getElementById("toggle-button");
+  // function handleToggle() {
+    // const toggleButton = document.getElementById("toggle-button");
 
-    if (toggleButton.classList.contains('technical')) {
-      toggleButton.classList.remove('technical');
-      toggleButton.classList.add('hr');
-      toggleButton.innerHTML = "HR";
-      updateSystemPrompt(hr_prompt)
-    } else {
-      toggleButton.classList.remove('hr');
-      toggleButton.classList.add('technical');
-      toggleButton.innerHTML = "Technical";
-      updateSystemPrompt(technical_prompt)
-    }
-  }
+    // if (toggleButton.classList.contains('technical')) {
+    //   toggleButton.classList.remove('technical');
+    //   toggleButton.classList.add('hr');
+    //   toggleButton.innerHTML = "HR";
+    //   updateSystemPrompt(hr_prompt)
+    // } else {
+    //   toggleButton.classList.remove('hr');
+    //   toggleButton.classList.add('technical');
+    //   toggleButton.innerHTML = "Technical";
+    //   updateSystemPrompt(technical_prompt)
+    // }
+  // }
 </script>
 <div class="overlay">
-  <button class="speak-button hr" id="toggle-button" onclick="handleToggle()">HR</button>
+  <button class="speak-button hr" id="toggle-button">HR</button>
   <button class="speak-button" id="speak-button-id" style="display: none;" onclick="handleButtonClick()">Speak</button>
-  <button class="speak-button" id="start-button" onclick="handleStart()">Start</button>
+  <button class="speak-button" id="start-button">Start</button>
   <button class="speak-button" style="display: none; background-color: #f44336;" id="end-button"
     onclick="handleEnd()">End</button>
 </div>

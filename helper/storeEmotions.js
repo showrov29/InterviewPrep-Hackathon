@@ -1,6 +1,7 @@
 function extractTopThreeEmotions(message) {
 	// extract emotion scores from the message
 	const scores = message.models.prosody?.scores;
+	// console.log("🚀 ~ extractTopThreeEmotions ~ scores:", scores)
 
 	// convert the emotions object into an array of key-value pairs
 	const scoresArray = Object.entries(scores || {});

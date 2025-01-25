@@ -107,7 +107,6 @@ function makeBlink(delta) {
     }
     if(left_eye < 0){
       blinkDir = 1
-      console.log('done')
       blinkFlag = false;
     }
     left_eye += blinkDir * delta*4
@@ -138,4 +137,77 @@ renderer.xr.addEventListener('sessionstart', () => {
 renderer.xr.addEventListener('sessionend', () => {
   insideVR = false;
 });
+// controllers
 
+controller1 = renderer.xr.getController(0);
+controller1.addEventListener('selectstart', () => {
+  console.log('selected 1', controller1.gamepad);
+});
+scene.add(controller1);
+controller1.addEventListener('connected', (event) => {
+  if (event.data.handedness == "left") {
+    controller2.gamepad = event.data.gamepad;
+  }
+  if (event.data.handedness == "right") {
+    controller1.gamepad = event.data.gamepad;
+  }
+});
+controller1.addEventListener('select', () => {
+  console.log('Button pressed on controller 1');
+});
+
+controller2 = renderer.xr.getController(1);
+controller2.addEventListener('selectstart', () => {
+  console.log('selected 2', controller2.gamepad);
+});
+scene.add(controller2);
+controller2.addEventListener('connected', (event) => {
+  if (event.data.handedness == "left") {
+    controller2.gamepad = event.data.gamepad;
+  }
+  if (event.data.handedness == "right") {
+    controller1.gamepad = event.data.gamepad;
+  }
+});
+controller2.addEventListener('select', () => {
+  console.log('Button pressed on controller 2');
+});
+
+// Check gamepad buttons
+function checkGamepadButtons() {
+  if (controller1.gamepad) {
+    controller1.gamepad.buttons.forEach((button, index) => {
+      if (button.pressed) {
+        if (index === 4) {
+          console.log('Button A pressed on controller 1');
+        } else if (index === 5) {
+          console.log('Button B pressed on controller 1');
+        } else {
+          console.log(`Button ${index} pressed on controller 1`);
+        }
+      }
+    });
+  }
+  if (controller2.gamepad) {
+    controller2.gamepad.buttons.forEach((button, index) => {
+      if (button.pressed) {
+        if (index === 4) {
+          console.log('Button X pressed on controller 2');
+        } else if (index === 5) {
+          console.log('Button Y pressed on controller 2');
+        } else {
+          console.log(`Button ${index} pressed on controller 2`);
+        }
+      }
+    });
+  }
+}
+
+renderer.setAnimationLoop(() => {
+  const delta = clock.getDelta();
+  renderer.render(scene, camera);
+  stats.update();
+  mixer && mixer.update(delta);
+  makeBlink(delta);
+  checkGamepadButtons();
+});

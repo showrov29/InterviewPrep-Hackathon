@@ -121,7 +121,7 @@
 <script src="./src/llmResponse.js"></script>
 <script>
   let changeMorphTargetByName
-  let camera, scene, renderer, avatar, light
+  let camera, scene, renderer, avatar, light, controller1, controller2
   let client = io()
   let isListening = false;
   let firstTime = true;
@@ -132,12 +132,13 @@
   let left_eye = 0
   let right_eye = 0
   let blinkFlag = false;
+  
 
-
+  
   function handleButtonClick() {
     let user_text = document.getElementById('user-text');
     let button = document.getElementById('speak-button-id')
-
+    
     if (isListening) {
       user_text.innerHTML = '';
       button.innerHTML = 'Speak';
@@ -150,7 +151,7 @@
       elevenLabsSocket = new WebSocket(wsUrl);
       startMicrophone();
     }
-
+    
     isListening = !isListening;
   }
   function handleStart() {
@@ -158,7 +159,7 @@
     document.getElementById("toggle-button").style.display = 'none';
     initSpeech();
   }
-
+  
   async function handleEnd() {
     stopMicrophone();
     document.getElementById("audioPlayback").pause();

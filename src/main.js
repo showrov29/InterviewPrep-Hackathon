@@ -178,9 +178,9 @@ renderer.xr.addEventListener('sessionend', () => {
 const connect = async (prompt) => {
   if (!client) {
     client = new HumeClient({
-      apiKey: "gsL9rIfx3HO6DbIbtN1rC6ABXWciNOFG8MvQgeU765gKTnEU",
+      apiKey: "UgAJNABI9eYX3Gjmm6f7Ns6vo6IlSl1hlb03vSM6yEXqx8Mj",
       secretKey:
-        "1co9e5iQhwq0eApZ62AniCDOCAntJeccHeb6ZAsUZnIghvQrUt2jydqjk6DXzYeF",
+        "yTEMSAQYXV13O8LxPV79L5iBsFRKnIG1O2ZQPmaX55zhlXj4eeSHGQFiYEfDXFIM",
     });
   }
 

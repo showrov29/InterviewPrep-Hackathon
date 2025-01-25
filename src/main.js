@@ -442,7 +442,36 @@ document.addEventListener('keydown', (event) => {
     document.getElementById("toggle-button").style.display = 'none';
     document.getElementById("dashboard-button").style.display = 'none';
     document.getElementById("instructions-button").style.display = 'none';
-    initSpeech();
+
+    // Create and display the countdown
+    const countdownContainer = document.createElement('div');
+    countdownContainer.id = 'countdown-container';
+    countdownContainer.style.position = 'fixed';
+    countdownContainer.style.top = '50%';
+    countdownContainer.style.left = '50%';
+    countdownContainer.style.transform = 'translate(-50%, -50%)';
+    countdownContainer.style.backgroundColor = 'rgba(0, 0, 0, 0.8)';
+    countdownContainer.style.color = 'white';
+    countdownContainer.style.padding = '20px';
+    countdownContainer.style.borderRadius = '8px';
+    countdownContainer.style.zIndex = '1000';
+    countdownContainer.style.fontSize = '48px';
+    countdownContainer.style.textAlign = 'center';
+    document.body.appendChild(countdownContainer);
+
+    let countdown = 3;
+    countdownContainer.innerHTML = countdown;
+
+    const countdownInterval = setInterval(() => {
+      countdown -= 1;
+      countdownContainer.innerHTML = countdown;
+
+      if (countdown === 0) {
+        clearInterval(countdownInterval);
+        document.body.removeChild(countdownContainer);
+        initSpeech();
+      }
+    }, 1000);
   }
 
   async function handleEnd() {
@@ -542,7 +571,11 @@ document.addEventListener('keydown', (event) => {
     closeModalButton.style.fontSize = '24px';
     closeModalButton.style.cursor = 'pointer';
     closeModalButton.addEventListener('click', () => {
-      resultModal.style.display = 'none';
+      if(resultModal.style.display != 'none') {
+        window.location.reload();
+        resultModal.style.display = 'none';
+      }
+      
     });
     resultModal.appendChild(closeModalButton);
 

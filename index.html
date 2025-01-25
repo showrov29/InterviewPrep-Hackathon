@@ -7,7 +7,7 @@
   <title>InterviewPrep Hackathon</title>
   <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
   <!-- <script src="./src/phonemeServe.js"></script> -->
-   <script src="helper/visemes.js"></script>
+  <script src="helper/visemes.js"></script>
   <script src="https://cdn.socket.io/4.0.0/socket.io.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
   <script src="src/main.js" type="module"></script>
@@ -135,12 +135,13 @@
   let left_eye = 0
   let right_eye = 0
   let blinkFlag = false;
+  let score = 0;
 
   let conversations = [];
   const url = "https://api.groq.com/openai/v1/chat/completions";
   const grokApiKey =
     "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";
-  function getFeedback() {
+  function getFeedback(lastResponse) {
     let tempData = {
       messages: [
         ...conversations
@@ -156,15 +157,20 @@
       const { topThreeEmotions, ...rest } = message;
       return rest;
     });
-    tempData.messages.push({
-      role: "system",
-      content: `Based on the conversation, give numerical feedback. Give a score between -1 to +1. -1 being the worst and +1 being the best. You can use fractional values. Only the value, nothing else.`
-    },
+    tempData.messages.push(
+      {
+        role: "user",
+        content: lastResponse
+      },
+      {
+        role: "system",
+        content: `Based on the conversation, give numerical feedback. Give a score between -1 to +1. -1 being the worst and +1 being the best. You can use fractional values. Only the value, nothing else.`
+      },
       {
         role: "user",
         content: "How did I do? Give me a score between -1 to +1. -1 being the worst and +1 being the best. You can use fractional values. Only the value, nothing else."
       })
-    console.log(tempData)
+    console.log('tempData',tempData)
     return axios
       .post(url, tempData, {
         headers: {
@@ -178,7 +184,7 @@
         //     role: "assistant",
         //     content: responseLLM,
         // });
-        console.log(responseLLM);
+        // console.log(responseLLM);
         return responseLLM;
       })
       .catch((error) => {

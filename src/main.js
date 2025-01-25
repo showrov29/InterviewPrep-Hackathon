@@ -260,6 +260,15 @@ async function handleSocketMessageEvent(message) {
 
 		// append user and assistant messages to UI for chat visibility
 		case "user_message":
+      let lastResponse = message.message.content;
+      if(conversations.length>0){
+      getFeedback(lastResponse).then(response => {
+        console.log("🚀 ~ handleSocketMessageEvent ~ response", response)
+        score += parseFloat(response);
+        console.log("🚀 ~ handleSocketMessageEvent ~ score", score)
+      }
+      );
+    }
 		case "assistant_message":
 			console.log(
 				"🚀 ~ handleSocketMessageEvent ~ message.message",

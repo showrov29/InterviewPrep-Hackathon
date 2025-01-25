@@ -20,7 +20,7 @@ let conversations = [];
 let isActive=true
 let isSpeaking = false
 // hume ai code ends
-
+let visemes = []
 let thisVisemeIndex = 0;
 let lastVisemeIndex = 0;
 let dictionary;
@@ -157,6 +157,7 @@ function makeBlink(delta) {
 animate();
 
 changeMorphTargetByName = (targetName) => {
+  // console.log("🚀 ~ targetName:", targetName)
   if (!avatar) {
     console.error("Model not loaded yet.");
     return;
@@ -164,6 +165,7 @@ changeMorphTargetByName = (targetName) => {
 
   avatar.children[0].getObjectByName('Wolf3D_Avatar').morphTargetInfluences[lastVisemeIndex] = 0;
   thisVisemeIndex = dictionary[targetName] || 0;
+  // console.log("🚀 ~ thisVisemeIndex:", targetName,dictionary)
   avatar.children[0].getObjectByName('Wolf3D_Avatar').morphTargetInfluences[thisVisemeIndex] = 1;
   lastVisemeIndex = thisVisemeIndex;
 };
@@ -265,6 +267,10 @@ async function handleSocketMessageEvent(message) {
 				message.message
 			);
 
+      visemes= mapStringToVisemes(message.message.content)
+    //  mapVisemesToModel(visemes)
+     console.log("🚀 ~ handleSocketMessageEvent ~ visemes:", visemes)
+
 			const { role, content } = message.message;
 			const topThreeEmotions = extractTopThreeEmotions(message);
       conversations.push({role, content, topThreeEmotions})
@@ -316,9 +322,15 @@ function playAudio() {
 	// converts Blob to AudioElement for playback
 	const audioUrl = URL.createObjectURL(audioBlob);
 	currentAudio = new Audio(audioUrl);
+// console.log("🚀 ~ playAudio ~ currentAudio", currentAudio.duration);
 
 	// play audio
 	currentAudio.play();
+  currentAudio.onplay = () => {
+    mapVisemesToModel(visemes)
+    console.log("🚀 ~ playAudio ~ current", currentAudio);
+    
+  }
 
 	// callback for when audio finishes playing
 	currentAudio.onended = () => {

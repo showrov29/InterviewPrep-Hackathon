@@ -134,6 +134,58 @@
   let right_eye = 0
   let blinkFlag = false;
 
+  let conversations = [];
+  const url = "https://api.groq.com/openai/v1/chat/completions";
+  const grokApiKey =
+    "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";
+  function getFeedback() {
+    let tempData = {
+      messages: [
+        ...conversations
+      ],
+      "model": "llama-3.3-70b-versatile",
+      "temperature": 1,
+      "max_tokens": 10,
+      "top_p": 1,
+      "stream": false,
+      "stop": null
+    }
+    tempData.messages = tempData.messages.map(message => {
+      const { topThreeEmotions, ...rest } = message;
+      return rest;
+    });
+    tempData.messages.push({
+      role: "system",
+      content: `Based on the conversation, give numerical feedback. Give a score between -1 to +1. -1 being the worst and +1 being the best. You can use fractional values. Only the value, nothing else.`
+    },
+      {
+        role: "user",
+        content: "How did I do? Give me a score between -1 to +1. -1 being the worst and +1 being the best. You can use fractional values. Only the value, nothing else."
+      })
+    console.log(tempData)
+    return axios
+      .post(url, tempData, {
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${grokApiKey}`,
+        },
+      })
+      .then((response) => {
+        let responseLLM = response.data.choices[0].message.content;
+        // data.messages.push({
+        //     role: "assistant",
+        //     content: responseLLM,
+        // });
+        console.log(responseLLM);
+        return responseLLM;
+      })
+      .catch((error) => {
+        console.error("Error:", error);
+      });
+  }
+
+
+
 
   // function handleButtonClick() {
   //   let user_text = document.getElementById('user-text');
@@ -213,19 +265,19 @@
   // });
 
   // function handleToggle() {
-    // const toggleButton = document.getElementById("toggle-button");
+  // const toggleButton = document.getElementById("toggle-button");
 
-    // if (toggleButton.classList.contains('technical')) {
-    //   toggleButton.classList.remove('technical');
-    //   toggleButton.classList.add('hr');
-    //   toggleButton.innerHTML = "HR";
-    //   updateSystemPrompt(hr_prompt)
-    // } else {
-    //   toggleButton.classList.remove('hr');
-    //   toggleButton.classList.add('technical');
-    //   toggleButton.innerHTML = "Technical";
-    //   updateSystemPrompt(technical_prompt)
-    // }
+  // if (toggleButton.classList.contains('technical')) {
+  //   toggleButton.classList.remove('technical');
+  //   toggleButton.classList.add('hr');
+  //   toggleButton.innerHTML = "HR";
+  //   updateSystemPrompt(hr_prompt)
+  // } else {
+  //   toggleButton.classList.remove('hr');
+  //   toggleButton.classList.add('technical');
+  //   toggleButton.innerHTML = "Technical";
+  //   updateSystemPrompt(technical_prompt)
+  // }
   // }
 </script>
 <div class="overlay">

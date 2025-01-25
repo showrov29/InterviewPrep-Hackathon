@@ -33,6 +33,10 @@ function updateSystemPrompt(prompt){
              "stop": null
     };
 }
+async function getInterimFeedback(){
+    console.log(conversations)
+
+}
 
 async function getResponse(text, feedback) {
 

@@ -33,8 +33,41 @@ function updateSystemPrompt(prompt){
              "stop": null
     };
 }
+async function getInterimFeedback(){
+    let tempData = {...data}
+    tempData.model = "llama-3.3-70b-versatile"
+        tempData.max_tokens = 10
+        tempData.messages.push({
+            role : "system",
+            content: `Based on the conversation, give numerical feedback. Give a score between -1 to +1. -1 being the worst and +1 being the best. You can use fractional values. Only the value, nothing else.`
+        },
+    {
+        role : "user",
+        content: "How did I do? Give me a score between -1 to +1. -1 being the worst and +1 being the best. You can use fractional values. Only the value, nothing else."
+    })
+        console.log(tempData)
+        return axios
+        .post(url, tempData, {
+            headers: {
+                "Content-Type": "application/json",
+                Authorization: `Bearer ${apiKey}`,
+            },
+        })
+        .then((response) => {
+            let responseLLM = response.data.choices[0].message.content;
+            // data.messages.push({
+            //     role: "assistant",
+            //     content: responseLLM,
+            // });
+            console.log(responseLLM);
+            return responseLLM;
+        })
+        .catch((error) => {
+            console.error("Error:", error);
+        });
+}
 
-async function getResponse(text, feedback) {
+async function getResponse(text, feedback, change_complexity) {
 
     if(feedback){
         data.model = "llama-3.3-70b-versatile"
@@ -60,7 +93,7 @@ async function getResponse(text, feedback) {
             content: "How did I do? Give me a point based summary. Don't give markdown. Write them line by line separated by :::"
         })
     }
-    else{
+    else if(text.length > 0){
         let end_button = document.getElementById("end-button")
         if(end_button.style.display == 'none' && conversation_count>2){
             console.log('enabling end')

@@ -98,9 +98,7 @@
 
 <body style="overflow: hidden;"></body>
 <script>
-  let technical_prompt = `
-  Based on the user's response, add a score in the beginning of the message between -1 to 1 at the end of the interview where -1 is the lowest and 1 is the highest. You can use fractional values. You should wrap the values in square brackets. For example, if you want to give a score of 0.5, you should return [0.5].
-  You are Alex, a seasoned software engineer conducting the technical interview for the role of Junior Software Engineer. Your goal is to assess the candidate's technical proficiency, problem-solving abilities, and understanding of core programming concepts. Tailor your questions to gauge the candidate's ability to apply their knowledge to practical scenarios and explain their thought process clearly. Ensure the questions are structured progressively, starting with fundamentals and gradually increasing in complexity.
+  let technical_prompt = `You are Alex, a seasoned software engineer conducting the technical interview for the role of Junior Software Engineer. Your goal is to assess the candidate's technical proficiency, problem-solving abilities, and understanding of core programming concepts. Tailor your questions to gauge the candidate's ability to apply their knowledge to practical scenarios and explain their thought process clearly. Ensure the questions are structured progressively, starting with fundamentals and gradually increasing in complexity.
   
   Focus areas for the questions should include:
   
@@ -113,15 +111,17 @@
   
   Example:
   User: Hello!
-  You: [0.5]Hello, welcome! I’m Alex, your technical interviewer today. Let’s dive into some coding and problem-solving!`
-  let hr_prompt = `
-  Based on the user's response, add a score between -1 to 1 at the end of the interview where -1 is the lowest and 1 is the highest. You can use fractional values. You should wrap the values in square brackets. For example, if you want to give a score of 0.5, you should return [0.5].
-  You are Steve, a professional interviewer who is evaluating HR part for the job of Junior Software Engineer. He has done his technical round already. Your job is to ask thoughtful and relevant questions to the interviewer that demonstrate the candidate's curiosity, interest in the company, and alignment with its culture. Ensure the questions are polite, engaging, and reflective of the candidate's desire to understand the company's environment, values, and growth opportunities. Avoid overly technical or role-specific questions in this context. Ask 8-10 questions, covering topics like:- Company culture and work environment- Opportunities for professional growth- Team dynamics and communication- Leadership style and expectations- Work-life balance and flexibility Make sure the questions are concise, open-ended, and conversational. Don't offer any tea coffee or anything. Your introductory speech should be around 15 words.
+  You: Hello, welcome! I’m Alex, your technical interviewer today. Let’s dive into some coding and problem-solving!`
+  let hr_prompt = `  You are Steve, a professional interviewer who is evaluating HR part for the job of Junior Software Engineer. He has done his technical round already. Your job is to ask thoughtful and relevant questions to the interviewer that demonstrate the candidate's curiosity, interest in the company, and alignment with its culture. Ensure the questions are polite, engaging, and reflective of the candidate's desire to understand the company's environment, values, and growth opportunities. Avoid overly technical or role-specific questions in this context. Ask 8-10 questions, covering topics like:- Company culture and work environment- Opportunities for professional growth- Team dynamics and communication- Leadership style and expectations- Work-life balance and flexibility Make sure the questions are concise, open-ended, and conversational. Don't offer any tea coffee or anything. Your introductory speech should be around 15 words.
 
-  
   For example:
   user: Hello!
-  You: [0.5]Hello! welcome, and thank you for taking the time to meet with us today. I hope you're doing well. My name is Steve, and I’m part of the HR team here. It's great to have you here.`
+  You: Hello! welcome, and thank you for taking the time to meet with us today. I hope you're doing well. My name is Steve, and I’m part of the HR team here. It's great to have you here.`
+</script>
+<script>
+  async function getFeedback(){
+    await getInterimFeedback()
+  }
 </script>
 <script src="./src/llmResponse.js"></script>
 <script>
@@ -137,7 +137,6 @@
   let left_eye = 0
   let right_eye = 0
   let blinkFlag = false;
-  let change_complexity = false;
 
 
   function handleButtonClick() {

@@ -16,7 +16,15 @@ import {
 let client, socket, recorder, audioStream, chatGroupId, isPlaying, currentAudio;
 let connected;
 let audioQueue = [];
-let conversations = [];
+let conversations = new Proxy([], {
+  set: function (target, property, value, receiver) {
+    target[property] = value;
+    if (property !== 'length') {
+      updateConversationUI();
+    }
+    return true;
+  }
+});
 let isActive=true
 let isSpeaking = false
 // hume ai code ends
@@ -296,6 +304,8 @@ async function handleSocketMessageEvent(message) {
 
 		// stop audio playback, clear audio playback queue, and update audio playback state on interrupt
 		case "user_interruption":
+      console.log("🚀 ~ handleSocketMessageEvent ~ user_interruption");
+      
 			stopAudio();
 			break;
 
@@ -352,6 +362,8 @@ function stopAudio() {
 
 	// clear the audioQueue
 	audioQueue.length = 0;
+  console.log("🚀 ~ stopAudio ~ audioQueue");
+  
 }
 
 
@@ -457,3 +469,89 @@ document.addEventListener('keydown', (event) => {
   document.getElementById('start-button').addEventListener('click', handleStart);
   document.getElementById('toggle-button').addEventListener('click', handleToggle);
   document.getElementById('end-button').addEventListener('click', handleEnd);
+
+  function updateConversationUI() {
+    const conversationContainer = document.getElementById('conversation');
+    conversationContainer.innerHTML = ''; // Clear existing content
+    conversationContainer.style.position = 'absolute';
+    conversationContainer.style.top = '10px';
+    conversationContainer.style.right = '10px';
+    conversationContainer.style.width = '300px';
+    conversationContainer.style.maxHeight = '90vh';
+    conversationContainer.style.overflowY = 'auto';
+    conversationContainer.style.backgroundColor = 'rgba(255, 255, 255, 0.9)';
+    conversationContainer.style.padding = '10px';
+    conversationContainer.style.borderRadius = '8px';
+    conversationContainer.style.boxShadow = '0 4px 6px rgba(0, 0, 0, 0.1)';
+  
+    conversations.forEach(({ role, content, topThreeEmotions }) => {
+      const messageDiv = document.createElement('div');
+      messageDiv.classList.add('message', role);
+      messageDiv.style.border = '1px solid #ccc';
+      messageDiv.style.padding = '10px';
+      messageDiv.style.marginBottom = '10px';
+      messageDiv.style.borderRadius = '5px';
+      messageDiv.style.backgroundColor = role === 'user' ? '#e0f7fa' : '#f1f8e9';
+  
+      const contentDiv = document.createElement('div');
+      contentDiv.textContent = content;
+      messageDiv.appendChild(contentDiv);
+  
+      const emotionsDiv = document.createElement('div');
+      emotionsDiv.classList.add('emotions');
+      emotionsDiv.style.display = 'flex';
+      emotionsDiv.style.justifyContent = 'space-between';
+  
+      topThreeEmotions.forEach(({ emotion, score }) => {
+        const emotionContainer = document.createElement('div');
+        emotionContainer.style.display = 'flex';
+        emotionContainer.style.flexDirection = 'column';
+        emotionContainer.style.alignItems = 'center';
+        emotionContainer.style.marginBottom = '5px';
+  
+        const emotionName = document.createElement('div');
+        emotionName.textContent = emotion;
+        emotionName.style.fontSize = '12px';
+        emotionName.style.marginBottom = '2px';
+        emotionContainer.appendChild(emotionName);
+  
+        const emotionSpan = document.createElement('span');
+        emotionSpan.classList.add('emotion');
+        emotionSpan.style.display = 'inline-block';
+        emotionSpan.style.width = '20px';
+        emotionSpan.style.height = '5px';
+        emotionSpan.style.backgroundColor = getEmotionColor(emotion, score);
+        emotionContainer.appendChild(emotionSpan);
+  
+        const emotionValue = document.createElement('div');
+        emotionValue.textContent = `${(score * 100).toFixed(2)}%`;
+        emotionValue.style.fontSize = '10px';
+        emotionValue.style.marginTop = '2px';
+        emotionContainer.appendChild(emotionValue);
+  
+        emotionsDiv.appendChild(emotionContainer);
+      });
+  
+      messageDiv.appendChild(emotionsDiv);
+  
+      if (role === 'user') {
+        messageDiv.style.textAlign = 'right';
+      } else if (role === 'assistant') {
+        messageDiv.style.textAlign = 'left';
+      }
+  
+      conversationContainer.appendChild(messageDiv);
+    });
+  }
+  
+  function getEmotionColor(emotion, score) {
+    const colors = {
+      happiness: 'yellow',
+      sadness: 'blue',
+      anger: 'red',
+      fear: 'purple',
+      surprise: 'orange',
+      disgust: 'green'
+    };
+    return colors[emotion] || 'gray';
+  }

@@ -1,9 +1,8 @@
-<strong><h2 align=center>This App Works in both VR and Web</h2></strong>
-
 # InterviewPrep-Hackathon
 
+## Project Description
 InterviewPrep-Hackathon is a project designed to help individuals prepare for technical interviews. It provides a collection of coding challenges, resources, and tools to practice and improve coding skills. The project also includes a 3D avatar that interacts with users, providing a more engaging and interactive experience. **The app works both in VR and web, with a primary focus on VR, offering an immersive interview preparation experience. The 3D environment and VR capabilities make this app a unique offering in the market, providing users with a realistic and interactive way to practice for interviews.**
-The project incorporates high-quality 3D assets, including models and environments, to create an immersive and interactive user experience. The environment is specially designed for VR but also works on web.
+
 ## How It Works
 1. **Server Setup**: The Express server is set up in `server.js`, which also handles WebSocket connections using Socket.io.
 2. **Phoneme Processing**: When a word is sent via WebSocket, the `phonemeProcessor` function in `phonemeServe.js` processes the word to generate its phonemes and emits the result back to the client.

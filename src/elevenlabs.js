@@ -329,6 +329,8 @@ async function mapVisemesToModel(visemes) {
     for (let i = 0; i < visemes.length; i++) {
       const viseme = visemes[i];
       setTimeout(() => {
+        // console.log("🚀 ~ viseme",viseme);
+        
         changeMorphTargetByName(viseme.value);
         totalComp += 1;
         if (visemes.length === totalComp) {

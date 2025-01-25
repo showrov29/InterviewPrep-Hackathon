@@ -16,7 +16,6 @@ import {
 let client, socket, recorder, audioStream, chatGroupId, isPlaying, currentAudio;
 let connected;
 let audioQueue = [];
-let conversations = [];
 let isActive=true
 let isSpeaking = false
 // hume ai code ends

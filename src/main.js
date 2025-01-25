@@ -49,8 +49,8 @@ window.addEventListener('resize', () => {
   renderer.setSize(window.innerWidth, window.innerHeight);
 });
 // Add stats
-const stats = Stats();
-document.body.appendChild(stats.dom);
+// const stats = Stats();
+// document.body.appendChild(stats.dom);
 
 // Add an ambient light
 const ambientLight = new THREE.AmbientLight(0x404040, 5);
@@ -101,7 +101,7 @@ function animate() {
   renderer.setAnimationLoop(() => {
     const delta = clock.getDelta();
     renderer.render(scene, camera);
-    stats.update();
+    // stats.update();
     mixer && mixer.update(delta);
     makeBlink(delta);
   });
@@ -165,9 +165,9 @@ renderer.xr.addEventListener('sessionend', () => {
 const connect = async (prompt) => {
   if (!client) {
     client = new HumeClient({
-      apiKey: "6ADRq4ypcI2IV6WlMnIEC31bK6WnYAgmPBLQQHZAgRGmDCAr",
+      apiKey: "gsL9rIfx3HO6DbIbtN1rC6ABXWciNOFG8MvQgeU765gKTnEU",
       secretKey:
-        "2VCOgvyCoBDJHXg7PqjZWjelQPT3ONNtx72p52eLFFZbHaYtvw7ev769O2VUEtDL",
+        "1co9e5iQhwq0eApZ62AniCDOCAntJeccHeb6ZAsUZnIghvQrUt2jydqjk6DXzYeF",
     });
   }
 
@@ -231,8 +231,12 @@ async function handleSocketMessageEvent(message) {
       if(conversations.length>0){
       getFeedback(lastResponse).then(response => {
         console.log("🚀 ~ handleSocketMessageEvent ~ response", response)
+
         score += parseFloat(response);
+        score = Math.max(-5, Math.min(5, score));
         console.log("🚀 ~ handleSocketMessageEvent ~ score", score)
+      
+    updateScoreSlider(score);
       }
       );
     }

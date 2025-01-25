@@ -131,11 +131,31 @@
   .dropdown:hover .dropdown-content {
     display: block;
   }
+
+  .score-slider-container {
+    position: absolute;
+    top: 10px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 200px;
+    height: 20px;
+    background-color: #ddd;
+    border-radius: 10px;
+    overflow: hidden;
+  }
+
+  .score-slider {
+    height: 100%;
+    background-color: #4CAF50;
+    transition: width 0.3s ease;
+  }
 </style>
 
-<body style="overflow: hidden;"></body>
-
-<!-- <script>
+<body style="overflow: hidden;">
+  <div class="score-slider-container">
+    <div class="score-slider" id="score-slider"></div>
+  </div>
+  <!-- <script>
   let technical_prompt = `You are Alex, a seasoned software engineer conducting the technical interview for the role of Junior Software Engineer. Your goal is to assess the candidate's technical proficiency, problem-solving abilities, and understanding of core programming concepts. Tailor your questions to gauge the candidate's ability to apply their knowledge to practical scenarios and explain their thought process clearly. Ensure the questions are structured progressively, starting with fundamentals and gradually increasing in complexity.
   
   Focus areas for the questions should include:
@@ -156,222 +176,234 @@
   user: Hello!
   You: Hello! welcome, and thank you for taking the time to meet with us today. I hope you're doing well. My name is Steve, and I’m part of the HR team here. It's great to have you here.`
 </script> -->
-<!-- <script src="./src/llmResponse.js"></script> -->
-<script>
-  let changeMorphTargetByName
-  let camera, scene, renderer, avatar, light
-  let client = io()
-  let isListening = false;
-  let firstTime = true;
-  let response = ""
-  let micIndicator;
-  let insideVR = false;
-  let conversation_count = 0
-  let left_eye = 0
-  let right_eye = 0
-  let blinkFlag = false;
-  let score = 0;
-  let current_prompt = hr_prompt
+  <!-- <script src="./src/llmResponse.js"></script> -->
+  <script>
+    let changeMorphTargetByName
+    let camera, scene, renderer, avatar, light
+    let client = io()
+    let isListening = false;
+    let firstTime = true;
+    let response = ""
+    let micIndicator;
+    let insideVR = false;
+    let conversation_count = 0
+    let left_eye = 0
+    let right_eye = 0
+    let blinkFlag = false;
+    let score = 0;
+    let current_prompt = hr_prompt
 
 
-  let conversations = [];
-  const url = "https://api.groq.com/openai/v1/chat/completions";
-  const grokApiKey =
-    "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";
-  function getFeedback(lastResponse) {
-    let tempData = {
-      messages: [
-        ...conversations
-      ],
-      "model": "llama-3.3-70b-versatile",
-      "temperature": 1,
-      "max_tokens": 10,
-      "top_p": 1,
-      "stream": false,
-      "stop": null
-    }
-    tempData.messages = tempData.messages.map(message => {
-      const { topThreeEmotions, ...rest } = message;
-      return rest;
-    });
-    tempData.messages.push(
-      {
-        role: "user",
-        content: lastResponse
-      },
-      {
-        role: "system",
-        content: `Based on the conversation, give numerical feedback. Give a score between -1 to +1. -1 being the worst and +1 being the best. You can use fractional values. Only the value, nothing else.`
-      },
-      {
-        role: "user",
-        content: "How did I do? Give me a score between -1 to +1. -1 being the worst and +1 being the best. You can use fractional values. Only the value, nothing else."
-      })
-    console.log('tempData', tempData)
-    return axios
-      .post(url, tempData, {
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${grokApiKey}`,
-        },
-      })
-      .then((response) => {
-        let responseLLM = response.data.choices[0].message.content;
-        // data.messages.push({
-        //     role: "assistant",
-        //     content: responseLLM,
-        // });
-        // console.log(responseLLM);
-        return responseLLM;
-      })
-      .catch((error) => {
-        console.error("Error:", error);
+    let conversations = [];
+    const url = "https://api.groq.com/openai/v1/chat/completions";
+    const grokApiKey =
+      "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";
+    function getFeedback(lastResponse) {
+      let tempData = {
+        messages: [
+          ...conversations
+        ],
+        "model": "llama-3.3-70b-versatile",
+        "temperature": 1,
+        "max_tokens": 10,
+        "top_p": 1,
+        "stream": false,
+        "stop": null
+      }
+      tempData.messages = tempData.messages.map(message => {
+        const { topThreeEmotions, ...rest } = message;
+        return rest;
       });
-  }
-
-
-
-
-  // function handleButtonClick() {
-  //   let user_text = document.getElementById('user-text');
-  //   let button = document.getElementById('speak-button-id')
-
-  //   if (isListening) {
-  //     user_text.innerHTML = '';
-  //     button.innerHTML = 'Speak';
-  //     button.classList.remove('listening');
-  //     stopMicrophone();
-  //   } else {
-  //     user_text.innerHTML = 'Listening...';
-  //     button.innerHTML = 'Stop';
-  //     button.classList.add('listening');
-  //     elevenLabsSocket = new WebSocket(wsUrl);
-  //     startMicrophone();
-  //   }
-
-  //   isListening = !isListening;
-  // }
-  // function handleStart() {
-  //   document.getElementById("start-button").style.display = 'none';
-  //   document.getElementById("toggle-button").style.display = 'none';
-  //   initSpeech();
-  // }
-
-  // async function handleEnd() {
-  //   stopMicrophone();
-  //   document.getElementById("audioPlayback").pause();
-  //   document.getElementById("end-button").style.display = 'none';
-  //   document.getElementById("speak-button-id").style.display = 'none';
-  //   document.getElementById("toggle-button").style.display = 'none';
-  //   document.getElementById("start-button").style.display = 'none';
-  //   document.getElementById("user-div").style.display = 'none';
-  //   document.getElementById("interviewer-div").style.display = 'none';
-  //   document.getElementById("audioPlayback").style.display = 'none';
-  //   document.body.style.overflow = 'auto'; // Enable scrolling if needed
-
-  //   // Hide Three.js canvas
-  //   renderer.domElement.style.display = 'none';
-
-  //   // Fetch result
-  //   let result = await getResponse("", true);
-  //   console.log("🚀 ~ handleEnd ~ result:", result);
-
-  //   // Process result to add new lines if asterisk (*) is found
-  //   result = result.replace(/\:::/g, '<br>');
-
-  //   // Show result
-  //   const resultDiv = document.createElement('div');
-  //   resultDiv.id = 'result-div';
-  //   resultDiv.style.position = 'absolute';
-  //   resultDiv.style.lineHeight = 1.6
-  //   resultDiv.style.top = '50%';
-  //   resultDiv.style.left = '50%';
-  //   resultDiv.style.transform = 'translate(-50%, -50%)';
-  //   resultDiv.style.backgroundColor = 'white';
-  //   resultDiv.style.padding = '20px';
-  //   resultDiv.style.borderRadius = '8px';
-  //   resultDiv.style.boxShadow = '0 4px 6px rgba(0, 0, 0, 0.1)';
-  //   resultDiv.innerHTML = `<div><p style="font-weight: bold; text-align: center; font-size: 20px">Here is how you did</p><p style="text-align: justify">${result}</p></div>`;
-  //   document.body.appendChild(resultDiv);
-  // }
-
-  // async function initSpeech() {
-  //   response = await getResponse(`Hello!`);
-  //   getAudioAndCharsFromElevenLabs(response)
-  // }
-  // Function to update microphone indicator color
-
-  // document.addEventListener('keydown', (event) => {
-  //   if (event.key === 's') {
-  //     handleStart();
-  //   } else if (event.key === 'm') {
-  //     handleButtonClick();
-  //   }
-  // });
-
-  // function handleToggle() {
-  // const toggleButton = document.getElementById("toggle-button");
-
-  // if (toggleButton.classList.contains('technical')) {
-  //   toggleButton.classList.remove('technical');
-  //   toggleButton.classList.add('hr');
-  //   toggleButton.innerHTML = "HR";
-  //   updateSystemPrompt(hr_prompt)
-  // } else {
-  //   toggleButton.classList.remove('hr');
-  //   toggleButton.classList.add('technical');
-  //   toggleButton.innerHTML = "Technical";
-  //   updateSystemPrompt(technical_prompt)
-  // }
-  // }
-  function handleToggle(role) {
-    const toggleButton = document.getElementById("toggle-button");
-    toggleButton.innerHTML = role;
-
-    switch (role) {
-      case 'HR':
-        // updateSystemPrompt(hr_prompt)
-        console.log('HR selected');
-        current_prompt = hr_prompt;
-        break;
-      case 'Technical':
-        // updateSystemPrompt(technical_prompt)
-        console.log('Technical selected');
-        current_prompt = technical_prompt;
-        break;
-      case 'Barista':
-        // updateSystemPrompt(barista_prompt)
-        console.log('Barista selected');
-        current_prompt = barista_prompt;
-        break;
-      default:
-        console.log('Unknown role selected');
+      tempData.messages.push(
+        {
+          role: "user",
+          content: lastResponse
+        },
+        {
+          role: "system",
+          content: `Based on the conversation, give numerical feedback. Give a score between -1 to +1. -1 being the worst and +1 being the best. Prioritize user's last chat most for scoring. You can use fractional values. Only the value, nothing else.`
+        },
+        {
+          role: "user",
+          content: "How did I do? Give me a score between -1 to +1. -1 being the worst and +1 being the best. You can use fractional values. Only the value, nothing else."
+        })
+      console.log('tempData', tempData)
+      return axios
+        .post(url, tempData, {
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${grokApiKey}`,
+          },
+        })
+        .then((response) => {
+          let responseLLM = response.data.choices[0].message.content;
+          // data.messages.push({
+          //     role: "assistant",
+          //     content: responseLLM,
+          // });
+          // console.log(responseLLM);
+          return responseLLM;
+        })
+        .catch((error) => {
+          console.error("Error:", error);
+        });
     }
-  }
-</script>
-<div class="overlay">
-  <div class="dropdown">
-    <button class="speak-button" id="toggle-button">Select Role</button>
-    <div class="dropdown-content">
-      <button onclick="handleToggle('HR')">HR</button>
-      <button onclick="handleToggle('Technical')">Technical</button>
-      <button onclick="handleToggle('Barista')">Barista</button>
+
+
+
+
+    // function handleButtonClick() {
+    //   let user_text = document.getElementById('user-text');
+    //   let button = document.getElementById('speak-button-id')
+
+    //   if (isListening) {
+    //     user_text.innerHTML = '';
+    //     button.innerHTML = 'Speak';
+    //     button.classList.remove('listening');
+    //     stopMicrophone();
+    //   } else {
+    //     user_text.innerHTML = 'Listening...';
+    //     button.innerHTML = 'Stop';
+    //     button.classList.add('listening');
+    //     elevenLabsSocket = new WebSocket(wsUrl);
+    //     startMicrophone();
+    //   }
+
+    //   isListening = !isListening;
+    // }
+    // function handleStart() {
+    //   document.getElementById("start-button").style.display = 'none';
+    //   document.getElementById("toggle-button").style.display = 'none';
+    //   initSpeech();
+    // }
+
+    // async function handleEnd() {
+    //   stopMicrophone();
+    //   document.getElementById("audioPlayback").pause();
+    //   document.getElementById("end-button").style.display = 'none';
+    //   document.getElementById("speak-button-id").style.display = 'none';
+    //   document.getElementById("toggle-button").style.display = 'none';
+    //   document.getElementById("start-button").style.display = 'none';
+    //   document.getElementById("user-div").style.display = 'none';
+    //   document.getElementById("interviewer-div").style.display = 'none';
+    //   document.getElementById("audioPlayback").style.display = 'none';
+    //   document.body.style.overflow = 'auto'; // Enable scrolling if needed
+
+    //   // Hide Three.js canvas
+    //   renderer.domElement.style.display = 'none';
+
+    //   // Fetch result
+    //   let result = await getResponse("", true);
+    //   console.log("🚀 ~ handleEnd ~ result:", result);
+
+    //   // Process result to add new lines if asterisk (*) is found
+    //   result = result.replace(/\:::/g, '<br>');
+
+    //   // Show result
+    //   const resultDiv = document.createElement('div');
+    //   resultDiv.id = 'result-div';
+    //   resultDiv.style.position = 'absolute';
+    //   resultDiv.style.lineHeight = 1.6
+    //   resultDiv.style.top = '50%';
+    //   resultDiv.style.left = '50%';
+    //   resultDiv.style.transform = 'translate(-50%, -50%)';
+    //   resultDiv.style.backgroundColor = 'white';
+    //   resultDiv.style.padding = '20px';
+    //   resultDiv.style.borderRadius = '8px';
+    //   resultDiv.style.boxShadow = '0 4px 6px rgba(0, 0, 0, 0.1)';
+    //   resultDiv.innerHTML = `<div><p style="font-weight: bold; text-align: center; font-size: 20px">Here is how you did</p><p style="text-align: justify">${result}</p></div>`;
+    //   document.body.appendChild(resultDiv);
+    // }
+
+    // async function initSpeech() {
+    //   response = await getResponse(`Hello!`);
+    //   getAudioAndCharsFromElevenLabs(response)
+    // }
+    // Function to update microphone indicator color
+
+    // document.addEventListener('keydown', (event) => {
+    //   if (event.key === 's') {
+    //     handleStart();
+    //   } else if (event.key === 'm') {
+    //     handleButtonClick();
+    //   }
+    // });
+
+    // function handleToggle() {
+    // const toggleButton = document.getElementById("toggle-button");
+
+    // if (toggleButton.classList.contains('technical')) {
+    //   toggleButton.classList.remove('technical');
+    //   toggleButton.classList.add('hr');
+    //   toggleButton.innerHTML = "HR";
+    //   updateSystemPrompt(hr_prompt)
+    // } else {
+    //   toggleButton.classList.remove('hr');
+    //   toggleButton.classList.add('technical');
+    //   toggleButton.innerHTML = "Technical";
+    //   updateSystemPrompt(technical_prompt)
+    // }
+    // }
+    function handleToggle(role) {
+      const toggleButton = document.getElementById("toggle-button");
+      toggleButton.innerHTML = role;
+
+      switch (role) {
+        case 'HR':
+          // updateSystemPrompt(hr_prompt)
+          console.log('HR selected');
+          current_prompt = hr_prompt;
+          break;
+        case 'Technical':
+          // updateSystemPrompt(technical_prompt)
+          console.log('Technical selected');
+          current_prompt = technical_prompt;
+          break;
+        case 'Barista':
+          // updateSystemPrompt(barista_prompt)
+          console.log('Barista selected');
+          current_prompt = barista_prompt;
+          break;
+        default:
+          console.log('Unknown role selected');
+      }
+    }
+
+    function updateScoreSlider(score) {
+      const slider = document.getElementById('score-slider');
+      let percentage 
+      = Math.abs((score + 5) * 10);
+      console.log("🚀 ~ updateScoreSlider ~ percentage:", percentage)
+      slider.style.width = `${percentage}%`;
+      slider.style.backgroundColor = score > 0 ? '#4CAF50' : score < 0 ? '#f44336' : '#ddd';
+    }
+
+    // Example usage:
+    updateScoreSlider(score);
+  </script>
+  <div class="overlay">
+    <div class="dropdown">
+      <button class="speak-button" id="toggle-button">Select Role</button>
+      <div class="dropdown-content">
+        <button onclick="handleToggle('HR')">HR</button>
+        <button onclick="handleToggle('Technical')">Technical</button>
+        <button onclick="handleToggle('Barista')">Barista</button>
+      </div>
     </div>
+    <button class="speak-button" id="speak-button-id" style="display: none;" onclick="handleButtonClick()">Speak</button>
+    <button class="speak-button" id="start-button">Start</button>
+    <button class="speak-button" style="display: none; background-color: #f44336;" id="end-button"
+      onclick="handleEnd()">End</button>
   </div>
-  <button class="speak-button" id="speak-button-id" style="display: none;" onclick="handleButtonClick()">Speak</button>
-  <button class="speak-button" id="start-button">Start</button>
-  <button class="speak-button" style="display: none; background-color: #f44336;" id="end-button"
-    onclick="handleEnd()">End</button>
-</div>
-<div class="conversation-user hidden" id="user-div">
-  <p class="capitalize" id="user-text"></p>
-</div>
-<div class="conversation-avatar hidden" id="interviewer-div">
-  <p class="capitalize" id="interviewer-text"></p>
-</div>
-<audio id="audioPlayback" hidden controls>
-  <source id="audioSource" type="audio/mp3" src="" />
-</audio>
+  <div class="conversation-user hidden" id="user-div">
+    <p class="capitalize" id="user-text"></p>
+  </div>
+  <div class="conversation-avatar hidden" id="interviewer-div">
+    <p class="capitalize" id="interviewer-text"></p>
+  </div>
+  <audio id="audioPlayback" hidden controls>
+    <source id="audioSource" type="audio/mp3" src="" />
+  </audio>
 </body>
 
 </html>

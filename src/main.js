@@ -29,25 +29,6 @@ let blinkLeftIndex
 let blinkRightIndex
 
 
-let technical_prompt = `You are Alex, a seasoned software engineer conducting the technical interview for the role of Junior Software Engineer. Your goal is to assess the candidate's technical proficiency, problem-solving abilities, and understanding of core programming concepts. Tailor your questions to gauge the candidate's ability to apply their knowledge to practical scenarios and explain their thought process clearly. Ensure the questions are structured progressively, starting with fundamentals and gradually increasing in complexity.
-  
-Focus areas for the questions should include:
-
-Programming concepts (data structures, algorithms, OOP).
-Problem-solving and debugging.
-Familiarity with tools, frameworks, or languages mentioned in the job description.
-Code optimization and best practices.
-Their approach to version control (e.g., Git).
-Ask 8–10 questions, ensuring a mix of conceptual and scenario-based challenges. Encourage the candidate to talk through their thought process for each answer. Provide them with code snippets or short problems as needed for a practical evaluation. Your response should be less than 10 words, setting a professional and collaborative tone. Avoid unnecessary formalities or non-technical discussions. First you'll introduce yourself and make the candidate comfortable.
-
-Example:
-User: Hello!
-You: Hello, welcome! I’m Alex, your technical interviewer today. Let’s dive into some coding and problem-solving!`
-let hr_prompt = `You are Steve, a professional interviewer who is evaluating HR part for the job of Junior Software Engineer. He has done his technical round already. Your job is to ask thoughtful and relevant questions to the interviewer that demonstrate the candidate's curiosity, interest in the company, and alignment with its culture. Ensure the questions are polite, engaging, and reflective of the candidate's desire to understand the company's environment, values, and growth opportunities. Avoid overly technical or role-specific questions in this context. Ask 8-10 questions, covering topics like:- Company culture and work environment- Opportunities for professional growth- Team dynamics and communication- Leadership style and expectations- Work-life balance and flexibility Make sure the questions are concise, open-ended, and conversational. Don't offer any tea coffee or anything. Your introductory speech should be around 15 words.
-
-For example:
-user: Hello!
-You: Hello! welcome, and thank you for taking the time to meet with us today. I hope you're doing well. My name is Steve, and I’m part of the HR team here. It's great to have you here.`
 
 // Create the scene
 scene = new THREE.Scene();
@@ -444,24 +425,8 @@ document.addEventListener('keydown', (event) => {
     // getAudioAndCharsFromElevenLabs(response)
   }
 
-  function handleToggle() {
-    const toggleButton = document.getElementById("toggle-button");
-
-    if (toggleButton.classList.contains('technical')) {
-      toggleButton.classList.remove('technical');
-      toggleButton.classList.add('hr');
-      toggleButton.innerHTML = "HR";
-      // updateSystemPrompt(hr_prompt)
-    } else {
-      toggleButton.classList.remove('hr');
-      toggleButton.classList.add('technical');
-      toggleButton.innerHTML = "Technical";
-      // updateSystemPrompt(technical_prompt)
-    }
-  }
-
-
+ 
 
   document.getElementById('start-button').addEventListener('click', handleStart);
-  document.getElementById('toggle-button').addEventListener('click', handleToggle);
+  // document.getElementById('toggle-button').addEventListener('click', handleToggle);
   document.getElementById('end-button').addEventListener('click', handleEnd);

@@ -134,7 +134,6 @@ function makeBlink(delta) {
     }
     if(left_eye < 0){
       blinkDir = 1
-      console.log('done')
       blinkFlag = false;
     }
     left_eye += blinkDir * delta*4
@@ -194,6 +193,9 @@ const connect = async (prompt) => {
     // socket?.sendMessage(userMessage);
   });
   socket.on("message", handleSocketMessageEvent);
+  socket.on("close", () => {
+    console.log("Socket connection closed");
+  });
 };
 
 export const startSpeaking = async () => {
@@ -201,9 +203,11 @@ export const startSpeaking = async () => {
 };
 
 async function handleWebSocketOpenEvent() {
-	console.log("socket opened");
-	connected = true;
-	await captureAudio();
+  if (socket.readyState === WebSocket.OPEN) {
+    console.log("socket opened");
+    connected = true;
+    await captureAudio();
+  }
 }
 async function captureAudio() {
 	// audioStream = await getAudioStream();
@@ -220,7 +224,9 @@ async function captureAudio() {
 		const audioInput = {
 			data: encodedAudioData,
 		};
-		socket.sendAudioInput(audioInput);
+    if (socket.readyState === WebSocket.OPEN) {
+      socket.sendAudioInput(audioInput);
+    }
 	};
 	const timeSlice = 100;
 	recorder.start(timeSlice);
@@ -260,14 +266,6 @@ if (message.type == "assistant_end" && user_conv_count > 15 && oncer) {
   } else if (current_role === 'barista') {
     socket.sendUserInput(end_barista_prompt);
   }
-}
-
-
-if(message.type == "assistant_end" && sessionEnded){
-  socket.close();
-  audioStream.getTracks().forEach(track => track.stop());
-  // ended. now call dashboard
-  // handleEnd();
 }
 	switch (message.type) {
 		// save chat_group_id to resume chat if disconnected
@@ -436,6 +434,7 @@ document.addEventListener('keydown', (event) => {
 
   async function handleEnd() {
     stopAudio();
+    socket.close();
     // stopMicrophone();
     document.getElementById("audioPlayback").pause();
     document.getElementById("end-button").style.display = 'none';
@@ -454,7 +453,11 @@ document.addEventListener('keydown', (event) => {
 
     // Fetch result
     let result = await getFinalFeedback();
-    console.log("🚀 ~ handleEnd ~ result:", result);
+    console.log("🚀 ~ handleEnd ~ result:", result)
+    
+    result = JSON.parse(result);
+    
+    console.log("🚀 ~ handleEnd ~ result_parsed:", result);
 
     // // Process result to add new lines if asterisk (*) is found
     // result = result.replace(/\:::/g, '<br>');

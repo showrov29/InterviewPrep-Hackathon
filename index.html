@@ -199,11 +199,37 @@
       });
       tempData.messages.push({
         role: "system",
-        content: `The interview session has been ended. Based on the conversation, write in JSON format the feedback for the user. It should include the following fields: "Things to improve", "score", "confidence score", "communication skill score", "attitude score". scores should be out of 100.`
+        content: `The interview session has been ended. Based on the conversation, write in JSON format the feedback for the user. It should include the following fields: Things to improve as "Improvements", overall score as "score", confidence score as "confidence", communication skill score as "communication", attitude score as "communication". scores should be out of 100.
+        For example:
+        {
+        "Improvements": [
+          "Provide clear and concise answers",
+          "Stay focused on the topic",
+          "Practice coding and problem-solving to improve technical skills"
+        ],
+        "score": 20,
+        "confidence": 30,
+        "communication": 20,
+        "attitude": 40
+      }
+        `
       })
       tempData.messages.push({
-        role: "user",
-        content: `How did I do? Give me a JSON format feedback for the me. It should include the following fields: "Things to improve", "score", "confidence score", "communication skill score", "attitude score". scores should be out of 100.`
+        role: "assistant",
+        content: `How did I do? Give me a JSON format feedback for the me. It should include the following fields: Things to improve as "Improvements", overall score as "score", confidence score as "confidence", communication skill score as "communication", attitude score as "communication". scores should be out of 100.
+        For example:
+        {
+        "Improvements": [
+          "Provide clear and concise answers",
+          "Stay focused on the topic",
+          "Practice coding and problem-solving to improve technical skills"
+        ],
+        "score": 20,
+        "confidence": 30,
+        "communication": 20,
+        "attitude": 40
+      }
+        `
       })
       console.log('tempData', tempData)
       let response = await axios.post(url_70b, tempData, {
@@ -212,13 +238,12 @@
           Authorization: `Bearer ${hfApiKey}`,
         },
       })
-      console.log("🚀 ~ getFinalFeedback ~ response", response)
-      return response;
+      return response.data.choices[0].message.content;
     }
     function getFeedback(lastResponse) {
       let tempData = {
         messages: [
-          
+
         ],
         "model": "meta-llama/Meta-Llama-3.1-8B-Instruct",
         "max_tokens": 5,
@@ -228,13 +253,13 @@
         {
           role: "system",
           content: `You're given a user's message. You'll give score for the message. If the answer is correct or the attitude is positive, give positive marking, if the answer is wrong or the attitude is negative, give negative marking. Your response must be a number from -1 to +1. ONLY GIVE THE NUMBER NOTHING ELSE.`
-        },{
-          role:"user",
-          content:'there are 1 types of inheritance in java'
-        },
+        }, {
+        role: "user",
+        content: 'there are 1 types of inheritance in java'
+      },
         {
-          role:'assistant',
-          content:'-0.8'
+          role: 'assistant',
+          content: '-0.8'
         },
         {
           role: "user",

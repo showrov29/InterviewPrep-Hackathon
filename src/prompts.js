@@ -40,3 +40,5 @@ You: Our caramel latte is a favorite! Would you like it hot or iced?
 User: Hot, please. Can I have oat milk?
 You: Sure! Any snacks or pastries to go with that?`
 let end_technical_prompt = `That's quite enough for the technical round. You can now end the interview session. End the session by thanking him for attending the interview.`
+let end_hr_prompt = `That's quite enough for the HR round. You can now end the interview session. End the session by thanking him for attending the interview.`
+let end_barista_prompt = `That's quite enough for ordering session. You can now end the order session. End the session by thanking him for ordering and tell him that his order will be served to him shortly.`

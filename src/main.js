@@ -189,7 +189,7 @@ const connect = async (prompt) => {
   socket.on("open", () => {
     handleWebSocketOpenEvent();
 
-    socket.sendUserInput(technical_prompt);
+    socket.sendUserInput(current_prompt);
 
     // socket?.sendMessage(userMessage);
   });
@@ -225,14 +225,28 @@ async function captureAudio() {
 	const timeSlice = 100;
 	recorder.start(timeSlice);
 }
-let user_conv_count = 0
+let user_conv_count = 0;
+let oncer = true;
 async function handleSocketMessageEvent(message) {
 	console.log("🚀 ~ handleSocketMessageEvent ~ message:", message);
   user_conv_count = conversations.filter(conversation => conversation.role === 'user').length - 1;
   console.log("🚀 ~ handleSocketMessageEvent ~ user_conv_count:", user_conv_count)
-  if(message.type == "assistant_end" && user_conv_count>2){
+  if(message.type == "assistant_end" && user_conv_count>2 && oncer){
+    oncer = false;
         console.log("🚀 ~ handleSocketMessageEvent ~ assistant_end");
-        socket.sendUserInput(end_technical_prompt);
+        if(current_role === 'technical'){
+          socket.sendUserInput(end_technical_prompt);
+        }
+        else if (current_role === 'hr') {
+          socket.sendUserInput(end_hr_prompt);
+        } else if (current_role === 'barista') {
+          socket.sendUserInput(end_barista_prompt);
+        }
+}
+if(message.type == "assistant_end" && sessionEnded){
+  socket.close();
+  audioStream.getTracks().forEach(track => track.stop());
+  // ended. now call dashboard
 }
 	switch (message.type) {
 		// save chat_group_id to resume chat if disconnected
@@ -267,7 +281,13 @@ async function handleSocketMessageEvent(message) {
 
 			const { role, content } = message.message;
 			const topThreeEmotions = extractTopThreeEmotions(message);
-      conversations.push({role, content, topThreeEmotions})
+      if(content == end_technical_prompt || content == end_hr_prompt || content == end_barista_prompt){
+        console.log('you can end now')
+        sessionEnded = true;
+      }
+      else{
+        conversations.push({role, content, topThreeEmotions})
+      }
       if(conversations.length>6){
         document.getElementById('end-button').style.display = 'inline-block';
       }

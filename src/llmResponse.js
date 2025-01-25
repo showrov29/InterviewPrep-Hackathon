@@ -48,6 +48,18 @@ async function getResponse(text, feedback) {
             content: "How did I do? Give me a point based summary. Don't give markdown. Write them line by line separated by :::"
         })
     }
+    else if(change_complexity){
+        data.model = "llama-3.3-70b-versatile"
+        data.max_tokens = 1024
+        data.messages.push({
+            role : "system",
+            content: `Based on the conversation, adjust the difficulty level of the questions. If the user is performing well, increase the difficulty level. If the user is struggling, decrease the difficulty level.`
+        })
+        data.messages.push({
+            role : "user",
+            content: "How did I do? Give me a point based summary. Don't give markdown. Write them line by line separated by :::"
+        })
+    }
     else{
         let end_button = document.getElementById("end-button")
         if(end_button.style.display == 'none' && conversation_count>2){
@@ -81,12 +93,12 @@ async function getResponse(text, feedback) {
             },
         })
         .then((response) => {
-            console.log("🚀 ~ .then ~ response:", response)
             let responseLLM = response.data.choices[0].message.content;
             data.messages.push({
                 role: "assistant",
                 content: responseLLM,
             });
+            console.log(responseLLM);
             return responseLLM;
         })
         .catch((error) => {

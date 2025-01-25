@@ -24,7 +24,7 @@ recognition.onresult = async (event) => {
       let response = await getResponse(finalTranscript)  
       // let response = "A quick brown fox jumps over the lazy dog"
       console.log("🚀 ~ response:", response)
-      getAudioAndCharsFromElevenLabs(response)
+      // getAudioAndCharsFromElevenLabs(response)
     } else {
       interimTranscript += transcript;
       let user_text = document.getElementById('user-text');

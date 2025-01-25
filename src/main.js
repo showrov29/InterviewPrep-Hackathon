@@ -470,6 +470,231 @@ document.addEventListener('keydown', (event) => {
   document.getElementById('toggle-button').addEventListener('click', handleToggle);
   document.getElementById('end-button').addEventListener('click', handleEnd);
 
+const dashboardButton = document.createElement('button');
+dashboardButton.id = 'dashboard-button';
+dashboardButton.textContent = 'Dashboard';
+dashboardButton.style.position = 'absolute';
+dashboardButton.style.top = '10px';
+dashboardButton.style.left = '10px';
+document.body.appendChild(dashboardButton);
+
+dashboardButton.addEventListener('click', () => {
+  document.getElementById('dashboard-modal').style.display = 'block';
+});
+
+const dashboardModal = document.createElement('div');
+dashboardModal.id = 'dashboard-modal';
+dashboardModal.style.display = 'none';
+dashboardModal.style.position = 'fixed';
+dashboardModal.style.top = '50%';
+dashboardModal.style.left = '50%';
+dashboardModal.style.transform = 'translate(-50%, -50%)';
+dashboardModal.style.width = '90%';
+dashboardModal.style.height = '90%';
+dashboardModal.style.backgroundColor = 'white';
+dashboardModal.style.padding = '20px';
+dashboardModal.style.borderRadius = '8px';
+dashboardModal.style.boxShadow = '0 4px 6px rgba(0, 0, 0, 0.1)';
+dashboardModal.style.zIndex = '1000';
+dashboardModal.style.overflowY = 'auto';
+document.body.appendChild(dashboardModal);
+
+const closeModalButton = document.createElement('button');
+closeModalButton.textContent = 'Close';
+closeModalButton.style.position = 'absolute';
+closeModalButton.style.top = '10px';
+closeModalButton.style.right = '10px';
+closeModalButton.addEventListener('click', () => {
+  dashboardModal.style.display = 'none';
+});
+dashboardModal.appendChild(closeModalButton);
+
+const topContainer = document.createElement('div');
+topContainer.style.display = 'flex';
+topContainer.style.justifyContent = 'space-between';
+topContainer.style.marginBottom = '20px';
+dashboardModal.appendChild(topContainer);
+
+const chartContainer = document.createElement('div');
+chartContainer.id = 'chart-container';
+chartContainer.style.width = '48%';
+chartContainer.style.height = '40%';
+topContainer.appendChild(chartContainer);
+
+const canvas = document.createElement('canvas');
+canvas.id = 'line-chart';
+canvas.style.width = '100%';
+chartContainer.appendChild(canvas);
+
+const bulletPointsContainer = document.createElement('div');
+bulletPointsContainer.style.width = '48%';
+bulletPointsContainer.style.padding = '20px';
+bulletPointsContainer.style.backgroundColor = '#f9f9f9';
+bulletPointsContainer.style.borderRadius = '8px';
+bulletPointsContainer.style.boxShadow = '0 4px 6px rgba(0, 0, 0, 0.1)';
+topContainer.appendChild(bulletPointsContainer);
+
+const bulletPointsTitle = document.createElement('h2');
+bulletPointsTitle.textContent = 'Key Points';
+bulletPointsContainer.appendChild(bulletPointsTitle);
+
+const bulletPointsList = document.createElement('ul');
+const bulletPoints = [
+  'Point 1: Description of point 1.',
+  'Point 2: Description of point 2.',
+  'Point 3: Description of point 3.',
+  'Point 4: Description of point 4.',
+  'Point 5: Description of point 5.'
+];
+bulletPoints.forEach(point => {
+  const listItem = document.createElement('li');
+  listItem.textContent = point;
+  bulletPointsList.appendChild(listItem);
+});
+bulletPointsContainer.appendChild(bulletPointsList);
+
+const data = [
+  { label: 'Progress 1', value: 25, description: 'Description for Progress 1' },
+  { label: 'Progress 2', value: 50, description: 'Description for Progress 2' },
+  { label: 'Progress 3', value: 90, description: 'Description for Progress 3' },
+  { label: 'Progress 4', value: 70, description: 'Description for Progress 4' },
+  { label: 'Progress 5', value: 85, description: 'Description for Progress 5' },
+  { label: 'Progress 6', value: 40, description: 'Description for Progress 6' }
+];
+
+const indicatorsContainer = document.createElement('div');
+indicatorsContainer.style.display = 'flex';
+indicatorsContainer.style.flexWrap = 'wrap';
+indicatorsContainer.style.justifyContent = 'space-between';
+dashboardModal.appendChild(indicatorsContainer);
+
+data.forEach((item, index) => {
+  const columnContainer = document.createElement('div');
+  columnContainer.style.display = 'flex';
+  columnContainer.style.flexDirection = 'column';
+  columnContainer.style.alignItems = 'center';
+  columnContainer.style.width = '18%';
+  columnContainer.style.marginBottom = '20px';
+  indicatorsContainer.appendChild(columnContainer);
+
+  const circularIndicator = document.createElement('canvas');
+  circularIndicator.id = `circular-indicator-${index}`;
+  circularIndicator.style.width = '100%';
+  circularIndicator.style.height = '100%';
+  columnContainer.appendChild(circularIndicator);
+
+  const circularLabel = document.createElement('div');
+  circularLabel.textContent = item.label;
+  circularLabel.style.marginTop = '10px';
+  columnContainer.appendChild(circularLabel);
+
+  const descriptionModal = document.createElement('div');
+  descriptionModal.id = `description-modal-${index}`;
+  descriptionModal.style.width = '100%';
+  descriptionModal.style.padding = '20px';
+  descriptionModal.style.backgroundColor = '#f9f9f9';
+  descriptionModal.style.borderRadius = '8px';
+  descriptionModal.style.boxShadow = '0 4px 6px rgba(0, 0, 0, 0.1)';
+  descriptionModal.style.textAlign = 'center';
+  descriptionModal.style.marginTop = '10px';
+  columnContainer.appendChild(descriptionModal);
+
+  const descriptionContent = document.createElement('p');
+  descriptionContent.textContent = item.description;
+  descriptionModal.appendChild(descriptionContent);
+});
+
+// Load Chart.js dynamically
+const script = document.createElement('script');
+script.src = 'https://cdn.jsdelivr.net/npm/chart.js';
+script.onload = () => {
+  const ctx = canvas.getContext('2d');
+  const lineChart = new Chart(ctx, {
+    type: 'line',
+    data: {
+      labels: ['January', 'February', 'March', 'April', 'May', 'June', 'July'],
+      datasets: [
+        {
+          label: 'Dataset 1',
+          data: [65, 59, 80, 81, 56, 55, 40],
+          borderColor: 'rgba(75, 192, 192, 1)',
+          borderWidth: 2,
+          fill: false
+        },
+        {
+          label: 'Dataset 2',
+          data: [28, 48, 40, 19, 86, 27, 90],
+          borderColor: 'rgba(153, 102, 255, 1)',
+          borderWidth: 2,
+          fill: false
+        }
+      ]
+    },
+    options: {
+      responsive: true,
+      scales: {
+        x: {
+          display: true,
+          title: {
+            display: true,
+            text: 'Month'
+          }
+        },
+        y: {
+          display: true,
+          title: {
+            display: true,
+            text: 'Value'
+          }
+        }
+      }
+    }
+  });
+
+  data.forEach((item, index) => {
+    const ctx = document.getElementById(`circular-indicator-${index}`).getContext('2d');
+    const backgroundColor = item.value < 30 ? '#ff0000' : item.value <= 70 ? '#ffeb3b' : '#4caf50';
+    new Chart(ctx, {
+      type: 'doughnut',
+      data: {
+        labels: ['Score'],
+        datasets: [{
+          data: [item.value, 100 - item.value],
+          backgroundColor: [backgroundColor, '#e0e0e0']
+        }]
+      },
+      options: {
+        responsive: true,
+        cutout: '50%',
+        plugins: {
+          legend: {
+            display: false
+          },
+          tooltip: {
+            callbacks: {
+              label: function (tooltipItem) {
+                return `${tooltipItem.label}: ${tooltipItem.raw}%`;
+              }
+            }
+          },
+          doughnutlabel: {
+            labels: [
+              {
+                text: `${item.value}%`,
+                font: {
+                  size: '20'
+                },
+                color: '#000'
+              }
+            ]
+          }
+        }
+      }
+    });
+  });
+};
+document.head.appendChild(script);
+
   function updateConversationUI() {
     const conversationContainer = document.getElementById('conversation');
     conversationContainer.innerHTML = ''; // Clear existing content

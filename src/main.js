@@ -189,7 +189,7 @@ const connect = async (prompt) => {
   socket.on("open", () => {
     handleWebSocketOpenEvent();
 
-    socket.sendUserInput(current_prompt);
+    socket.sendUserInput(technical_prompt);
 
     // socket?.sendMessage(userMessage);
   });
@@ -225,9 +225,15 @@ async function captureAudio() {
 	const timeSlice = 100;
 	recorder.start(timeSlice);
 }
-
+let user_conv_count = 0
 async function handleSocketMessageEvent(message) {
 	console.log("🚀 ~ handleSocketMessageEvent ~ message:", message);
+  user_conv_count = conversations.filter(conversation => conversation.role === 'user').length - 1;
+  console.log("🚀 ~ handleSocketMessageEvent ~ user_conv_count:", user_conv_count)
+  if(message.type == "assistant_end" && user_conv_count>2){
+        console.log("🚀 ~ handleSocketMessageEvent ~ assistant_end");
+        socket.sendUserInput(end_technical_prompt);
+}
 	switch (message.type) {
 		// save chat_group_id to resume chat if disconnected
 		case "chat_metadata":
@@ -268,7 +274,7 @@ async function handleSocketMessageEvent(message) {
 			// appendMessage(role, content ?? "", topThreeEmotions);
       console.log("🚀 ~ handleSocketMessageEvent ~ conversations", conversations)
 			break;
-
+      
 		// add received audio to the playback queue, and play next audio output
 		case "audio_output":
 			// convert base64 encoded audio to a Blob
@@ -489,13 +495,13 @@ document.addEventListener('keydown', (event) => {
         const emotionSpan = document.createElement('span');
         emotionSpan.classList.add('emotion');
         emotionSpan.style.display = 'inline-block';
-        emotionSpan.style.width = `${((Number(score)*100).toFixed(2))}%`;
+        emotionSpan.style.width = `${parseInt((Number(score)*100))}%`;
         emotionSpan.style.height = '5px';
         emotionSpan.style.backgroundColor = getEmotionColor(emotion, score);
         emotionContainer.appendChild(emotionSpan);
   
         const emotionValue = document.createElement('div');
-        emotionValue.textContent = `${((Number(score)*100).toFixed(2))}%`;
+        emotionValue.textContent = `${parseInt((Number(score)*100))}`;
         emotionValue.style.fontSize = '10px';
         emotionValue.style.marginTop = '2px';
         emotionContainer.appendChild(emotionValue);

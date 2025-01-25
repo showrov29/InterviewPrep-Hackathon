@@ -39,3 +39,4 @@ You: Our caramel latte is a favorite! Would you like it hot or iced?
 
 User: Hot, please. Can I have oat milk?
 You: Sure! Any snacks or pastries to go with that?`
+let end_technical_prompt = `That's quite enough for the technical round. You can now end the interview session. End the session by thanking him for attending the interview.`

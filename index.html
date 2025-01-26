@@ -232,7 +232,6 @@
 
     async function getFinalFeedback() {
       let finalConversation = Array.from(conversations);
-      console.log("🚀 ~ getFinalFeedback ~ finalConversation:", finalConversation)
       let tempData = {
         messages: [
           ...finalConversation
@@ -279,7 +278,6 @@
       }
         `
       })
-      console.log('tempData', tempData)
       let response = await axios.post(url_70b, tempData, {
         headers: {
           "Content-Type": "application/json",
@@ -322,7 +320,6 @@
           content: `"${lastResponse}" is the user's message. You'll give score for the message. If the answer is correct or the attitude is positive, give positive marking, if the answer is wrong or the attitude is negative, give negative marking. Your response must be a number from -1 to +1. ONLY GIVE THE NUMBER NOTHING ELSE.`
         }
       )
-      console.log('tempData', tempData)
       return axios
         .post(url_8b, tempData, {
           headers: {
@@ -336,7 +333,6 @@
           //     role: "assistant",
           //     content: responseLLM,
           // });
-          console.log('responseLLM', responseLLM);
           return responseLLM;
         })
         .catch((error) => {
@@ -356,24 +352,20 @@
         case 'HR':
           current_role = 'hr'
           // updateSystemPrompt(hr_prompt)
-          console.log('HR selected');
           current_prompt = hr_prompt;
           break;
         case 'Technical':
           current_role = 'technical'
           // updateSystemPrompt(technical_prompt)
-          console.log('Technical selected');
           current_prompt = technical_prompt;
           break;
         case 'Barista':
           current_role = 'barista'
           // updateSystemPrompt(barista_prompt)
-          console.log('Barista selected');
           current_prompt = barista_prompt;
           break;
         case 'Visa':
           current_role = 'visa'
-          console.log('visa selected');
           current_prompt = visa_prompt;
           break;
         default:
@@ -385,7 +377,6 @@
       const slider = document.getElementById('score-slider');
       let percentage
         = Math.abs((score + 5) * 10);
-      console.log("🚀 ~ updateScoreSlider ~ percentage:", percentage)
       slider.style.width = `${percentage}%`;
       slider.style.backgroundColor = score > 0 ? '#4CAF50' : score < 0 ? '#f44336' : '#ddd';
     }

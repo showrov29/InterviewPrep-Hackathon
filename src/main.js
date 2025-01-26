@@ -150,7 +150,6 @@ function makeBlink(delta) {
 animate();
 
 changeMorphTargetByName = (targetName) => {
-  // console.log("🚀 ~ targetName:", targetName)
   if (!avatar) {
     console.error("Model not loaded yet.");
     return;
@@ -158,7 +157,6 @@ changeMorphTargetByName = (targetName) => {
 
   avatar.children[0].getObjectByName('Wolf3D_Avatar').morphTargetInfluences[lastVisemeIndex] = 0;
   thisVisemeIndex = dictionary[targetName] || 0;
-  // console.log("🚀 ~ thisVisemeIndex:", targetName,dictionary)
   avatar.children[0].getObjectByName('Wolf3D_Avatar').morphTargetInfluences[thisVisemeIndex] = 1;
   lastVisemeIndex = thisVisemeIndex;
 };
@@ -199,7 +197,6 @@ const connect = async (prompt) => {
   });
   socket.on("message", handleSocketMessageEvent);
   socket.on("close", () => {
-    console.log("Socket connection closed");
   });
 };
 
@@ -209,7 +206,6 @@ export const startSpeaking = async () => {
 
 async function handleWebSocketOpenEvent() {
   if (socket.readyState === WebSocket.OPEN) {
-    console.log("socket opened");
     connected = true;
     await captureAudio();
   }
@@ -239,12 +235,9 @@ async function captureAudio() {
 let user_conv_count = 0;
 let oncer = true;
 async function handleSocketMessageEvent(message) {
-	console.log("🚀 ~ handleSocketMessageEvent ~ message:", message);
   user_conv_count = conversations.filter(conversation => conversation.role === 'user').length - 1;
-  console.log("🚀 ~ handleSocketMessageEvent ~ user_conv_count:", user_conv_count)
   if(message.type == "assistant_end" && user_conv_count>15 && oncer){
     oncer = false;
-        console.log("🚀 ~ handleSocketMessageEvent ~ assistant_end");
         if(current_role === 'technical'){
           socket.sendUserInput(end_technical_prompt);
         }
@@ -266,7 +259,6 @@ async function handleSocketMessageEvent(message) {
 // }
 if (message.type == "assistant_end" && user_conv_count > 15 && oncer) {
   oncer = false;
-  console.log("🚀 ~ handleSocketMessageEvent ~ assistant_end");
   if (current_role === 'technical') {
     socket.sendUserInput(end_technical_prompt);
   } else if (current_role === 'hr') {
@@ -289,30 +281,22 @@ if (message.type == "assistant_end" && user_conv_count > 15 && oncer) {
       let lastResponse = message.message.content;
       if(conversations.length>0){
       getFeedback(lastResponse).then(response => {
-        console.log("🚀 ~ handleSocketMessageEvent ~ response", response)
 
         score += parseFloat(response);
         score = Math.max(-5, Math.min(5, score));
-        console.log("🚀 ~ handleSocketMessageEvent ~ score", score)
       
     updateScoreSlider(score);
       }
       );
     }
 		case "assistant_message":
-			console.log(
-				"🚀 ~ handleSocketMessageEvent ~ message.message",
-				message.message
-			);
 
       visemes= mapStringToVisemes(message.message.content)
     //  mapVisemesToModel(visemes)
-     console.log("🚀 ~ handleSocketMessageEvent ~ visemes:", visemes)
 
 			const { role, content } = message.message;
 			const topThreeEmotions = extractTopThreeEmotions(message);
       if(content == end_technical_prompt || content == end_hr_prompt || content == end_barista_prompt || content == end_visa_prompt){
-        console.log('you can end now')
         sessionEnded = true;
       }
       else{
@@ -322,7 +306,6 @@ if (message.type == "assistant_end" && user_conv_count > 15 && oncer) {
         document.getElementById('end-button').style.display = 'inline-block';
       }
 			// appendMessage(role, content ?? "", topThreeEmotions);
-      console.log("🚀 ~ handleSocketMessageEvent ~ conversations", conversations)
 			break;
       
 		// add received audio to the playback queue, and play next audio output
@@ -343,7 +326,6 @@ if (message.type == "assistant_end" && user_conv_count > 15 && oncer) {
 
 		// stop audio playback, clear audio playback queue, and update audio playback state on interrupt
 		case "user_interruption":
-      console.log("🚀 ~ handleSocketMessageEvent ~ user_interruption");
       
 			stopAudio();
 			break;
@@ -371,13 +353,11 @@ function playAudio() {
 	// converts Blob to AudioElement for playback
 	const audioUrl = URL.createObjectURL(audioBlob);
 	currentAudio = new Audio(audioUrl);
-// console.log("🚀 ~ playAudio ~ currentAudio", currentAudio.duration);
 
 	// play audio
 	currentAudio.play();
   currentAudio.onplay = () => {
     mapVisemesToModel(visemes)
-    console.log("🚀 ~ playAudio ~ current", currentAudio);
     
   }
 
@@ -401,7 +381,6 @@ function stopAudio() {
 
 	// clear the audioQueue
 	audioQueue.length = 0;
-  console.log("🚀 ~ stopAudio ~ audioQueue");
   
 }
 
@@ -510,7 +489,6 @@ document.addEventListener('keydown', (event) => {
 
     // Fetch result
     let result = await getFinalFeedback();
-    console.log("🚀 ~ handleEnd ~ result:", result)
     
     try {
       result = JSON.parse(result);
@@ -518,7 +496,6 @@ document.addEventListener('keydown', (event) => {
       result = getBackupResponse();
     }
     
-    console.log("🚀 ~ handleEnd ~ result_parsed:", result);
     
     // Remove loading screen
     document.body.removeChild(loadingScreen);
@@ -535,7 +512,6 @@ document.addEventListener('keydown', (event) => {
     localStorage.setItem('attitude', JSON.stringify(storedAttitude));
     let storedImprovements = JSON.parse(localStorage.getItem('improvements')) || [];
      storedImprovements = result.Improvements
-    console.log("🚀 ~ handleEnd ~ storedImprovements:", storedImprovements)
     localStorage.setItem('improvements', JSON.stringify(storedImprovements));
 
     let storedBackstory = JSON.parse(localStorage.getItem('backstory')) || [];

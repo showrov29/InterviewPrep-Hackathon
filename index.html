@@ -177,7 +177,7 @@
   }
 
   .modal-content {
-    text-align: left;
+    text-align: center;
   }
 
   .modal-close {
@@ -434,15 +434,20 @@
   <div class="modal" id="instructions-modal" onmouseleave="hideInstructions()">
     <button class="modal-close" onclick="hideInstructions()">&times;</button>
     <div class="modal-content">
-      <h2>Instructions</h2>
-      <p>Welcome to the InterviewPrep Hackathon app! Here are some instructions to get you started:</p>
-      <ul>
-        <li>Select the role you want to practice from the dropdown menu.</li>
-        <li>Click the "Start" button to begin the interview session.</li>
-        <li>Click the "Speak" button to start speaking and the "Stop" button to stop.</li>
-        <li>Use the "End" button to end the session and get feedback.</li>
-        <li>Hover over the "Instructions" button to view these instructions.</li>
-      </ul>
+      <p style="font-size: x-large;">Instructions</p>
+      <p>Welcome to the InterviewPrep app!</p>
+      <p>Here are some instructions to get you started:</p>
+      <div style="text-align: justify; margin-top: 10px;">
+        <ul>
+          <li><i class="fas fa-circle"></i>   Select the role you want to practice from the dropdown menu.</li>
+          <li><i class="fas fa-circle"></i>   Click the "Start" button to begin the interview session.</li>
+          <li><i class="fas fa-circle"></i>   After some conversation, "End" button will appear. Use the "End" button
+            to end the session and get feedback.</li>
+          <li><i class="fas fa-circle"></i>   Use the "Dashboard" button to view personalized summary.</li>
+          <li><i class="fas fa-circle"></i>   Hover over the "Instructions" button to view these instructions.</li>
+        </ul>
+
+      </div>
     </div>
   </div>
 </body>

@@ -512,7 +512,11 @@ document.addEventListener('keydown', (event) => {
     let result = await getFinalFeedback();
     console.log("🚀 ~ handleEnd ~ result:", result)
     
-    result = JSON.parse(result);
+    try {
+      result = JSON.parse(result);
+    } catch (error) {
+      result = getBackupResponse();
+    }
     
     console.log("🚀 ~ handleEnd ~ result_parsed:", result);
     

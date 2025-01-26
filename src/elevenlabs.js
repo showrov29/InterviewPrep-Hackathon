@@ -162,7 +162,6 @@ async function getAudioAndCharsFromElevenLabs(text ) {
           initialVisemes.push(visemesOnly);
 
           // mapVisemesToModel(initialVisemes);
-          // console.log("🚀 ~ initialVisemes:", initialVisemes)
           if (firstTime) {
             audioElement.play();
             let interviewText = document.getElementById("interviewer-text")
@@ -204,7 +203,6 @@ async function getAudioAndCharsFromElevenLabs(text ) {
     firstTime = false;
     visemeIndex++;
     donePlayingVisemes = await mapVisemesToModel(initialVisemes[0]);
-    console.log("🚀 ~ audioElement.onplay= ~ donePlayingVisemes:", donePlayingVisemes)
   };
 
   audioElement.addEventListener("ended", async () => {
@@ -323,18 +321,15 @@ function convertToVisemes(arr) {
 }
 
 async function mapVisemesToModel(visemes) {
-  console.log("🚀 ~ mapVisemesToModel ~ visemes:", visemes.length);
   let totalComp = 0;
   return new Promise((resolve) => {
     for (let i = 0; i < visemes.length; i++) {
       const viseme = visemes[i];
       setTimeout(() => {
-        // console.log("🚀 ~ viseme",viseme);
         
         changeMorphTargetByName(viseme.value);
         totalComp += 1;
         if (visemes.length === totalComp) {
-          console.log('completed');
           resolve(true);
         }
       }, viseme.time);

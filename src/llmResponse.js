@@ -51,7 +51,6 @@ async function getResponse(text, feedback) {
     else{
         let end_button = document.getElementById("end-button")
         if(end_button.style.display == 'none' && conversation_count>2){
-            console.log('enabling end')
             end_button.style.display = 'inline-block';
         }
         conversation_count += 1
@@ -81,7 +80,6 @@ async function getResponse(text, feedback) {
             },
         })
         .then((response) => {
-            console.log("🚀 ~ .then ~ response:", response)
             let responseLLM = response.data.choices[0].message.content;
             data.messages.push({
                 role: "assistant",
